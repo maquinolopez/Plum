@@ -1,0 +1,14 @@
+Package: Plum
+Type: Package
+Title: 210Pb chronology
+Version: 0.1.0
+Author: Marco A. Aquino-Lopez
+Maintainer: Marco A. Aquino-Lopez <maquinolopez01@qub.ac.uk>
+Depends:
+    R (>= 3.0),
+    rPython
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true

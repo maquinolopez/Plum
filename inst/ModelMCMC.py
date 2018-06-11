@@ -1,9 +1,11 @@
     #####################  Librerias
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
 import pytwalk
-import cProfile
+#import cProfile
 from scipy.stats import uniform
 from numpy.random import seed
+
+
 
 def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds):
     seed(int(seeds))

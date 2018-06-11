@@ -12,7 +12,8 @@ Python 2.7
 numpy (python package)
 scipy (python package)
 matplotlib (python package)
+pytwalk (download and install instructions at http://www.cimat.mx/~jac/twalk/)
 
-	In the case of Mac OS, we recommend the installation of Anaconda (https://www.anaconda.com/download/). This will install python 2.7 and the necessary packages. 
+In the case of Mac OS, we recommend the installation of Anaconda (https://www.anaconda.com/download/). This will install python 2.7 and the necessary packages. 
 
 Installing rpython can be done from the R console by 

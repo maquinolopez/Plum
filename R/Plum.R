@@ -68,8 +68,6 @@ if (usemod==1){
   MCMC=paste(modirec,"/","ModelMCMC_Ra.py",sep="")
 }
 
-
-
 python.load(twalk)
 python.load(MCMC)
 dir.create(paste(folder,"Results",sep = ""))

@@ -1,6 +1,6 @@
 Package: Plum
 Type: Package
-Title: 210Pb chronology
+Title: Plum for 210Pb chronologies
 Version: 0.1.0
 Author: Marco A. Aquino-Lopez
 Maintainer: Marco A. Aquino-Lopez <maquinolopez01@qub.ac.uk>
@@ -8,6 +8,6 @@ Depends:
     R (>= 3.0),
     rPython
 Description: Plum is a apporach to 210Pb age-depth modelling that uses Bayesian statistics (https://doi.org/10.1007/s13253-018-0328-7).
-License: What license is it under?
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true

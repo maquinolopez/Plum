@@ -2,7 +2,7 @@
 #include <Python.h>
 	#####################  Librerias
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
-import pytwalk
+#import pytwalk
 #import cProfile
 from scipy.stats import uniform
 from numpy.random import seed

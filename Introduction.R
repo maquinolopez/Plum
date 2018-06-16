@@ -36,7 +36,7 @@ runPlum(folder = Folder,#  "Directory where data is located",
         seeds = "Simulations seed "
         )
 
-#Most of the rumPlum variables have default
+
 #folder and Data are the only necesary information 
 #other variables should be change according to prior information
 #Data is the name of the file as "Corecode.csv"

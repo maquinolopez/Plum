@@ -4,7 +4,7 @@
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
 #import pytwalk
 #import cProfile
-from scipy.stats import uniform
+from scipy.stats import uniform as unif
 from numpy.random import seed
 
 
@@ -14,11 +14,6 @@ from numpy.random import seed
 
 def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds):
 	seed(int(seeds))
-	#print(["direccion",dirt])
-	#print(["fichero",plomo])
-	#print(["modelo",T_mod])
-	#print(["det limit",det_lim])
-	#dirt,plomo,T_mod,num_sup,det_lim,iterations,burnin , by,shape1_m,mean_m,shape_acc,mean_acc = "/home/endymion/Documents/210Pb Python/Lead/TEST/","newset3.csv",False,	4   ,	.5 , int(.5e+2),int(.5e+2), 1.5,1.5,.7,1.5,10.
 	fimean=fi_mean
 	shapefi=fi_acc
 	ASmaean=As_mean
@@ -37,16 +32,14 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	supp=Data[:,5]
 	sd_supp=Data[:,6]
 	Ran=len(supp)
-	#print(Ran)
 
-	#print((sum(supp)/len(supp)))
 
 	activity=activity*density
 	sd_act=sd_act*density
 
 	lam=0.03114
 
-	#depth=array(range(20))*1+1
+
 
 	dep_time_data=append(depth-thic,depth)
 	dep_time_data=list(set(dep_time_data))
@@ -57,19 +50,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 				X1=append(X1,int(k1))
 			if (depth-thic)[i1]== dep_time_data[k1]:
 				X0=append(X0,int(k1))
-#	print(X0)
-#	print(X1)
-#	print(depth)
-#	dep_time_data=dep_time_data
-#	if dep_time_data[0] !=0.0:
-#		dep_time_data=append(0,dep_time_data)
-##	print(dep_time_data)
-#	conti=array([])
-#	for ci in range(len(depth)):
-#		if ((depth-thic)-append(0,depth)[:len(depth)])[ci]!=0:
-#				conti=append(conti,1)
-#		else:
-#			conti=append(conti,0)
+
 	m=1
 	breaks=array(m*by)
 	while m*by< depth[-1]:
@@ -99,7 +80,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 		tmp2=param[0]/lam
 		ts=times(dep_time_data,param)
 		for i in range(len(activity)):
-			A_i= Asup[i] + tmp2 *(exp(-lam*ts[int(X0[i])] ) - exp(-lam*ts[int(X1[i])]) )#exp(tmp2 - lam*ts[int(X0[i])] ) - exp(tmp2 - lam*ts[int(X1[i])])
+			A_i= Asup[i] + tmp2 *(exp(-lam*ts[int(X0[i])] ) - exp(-lam*ts[int(X1[i])]) )
 			Tau=.5*(sd_act[i]**(-2.))
 			loglike = loglike + Tau*((A_i-activity[i])**2.)
 		return loglike
@@ -179,45 +160,39 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 
 	#################### Initial valules
 	print("Seaching initial values")
-	fi_ini_1= uniform.rvs(size=1,loc=50, scale=200)  #200.
-	fi_ini_2= uniform.rvs(size=1,loc=250, scale=150) #100.
-	supp_ini_1= uniform.rvs(size=Ran,loc=15, scale=30) #5.
-	supp_ini_2= uniform.rvs(size=Ran,loc=1, scale=15) #20.
-	w_ini = uniform.rvs(size=1,loc=.2,scale=.3) #.3
-	w_ini0 = uniform.rvs(size=1,loc=.3,scale=.3)  #.7
-	m_ini_1=uniform.rvs(size=m,loc=0, scale=15)  #  repeat(array(3.1),m,axis=0)
-	m_ini_2=uniform.rvs(size=m,loc=0, scale=15)  # repeat(array(.5),m,axis=0)
+	fi_ini_1= unif.rvs(size=1,loc=50, scale=200)  #200.
+	fi_ini_2= unif.rvs(size=1,loc=250, scale=150) #100.
+	supp_ini_1= unif.rvs(size=Ran,loc=15, scale=30) #5.
+	supp_ini_2= unif.rvs(size=Ran,loc=1, scale=15) #20.
+	w_ini = unif.rvs(size=1,loc=.2,scale=.3) #.3
+	w_ini0 = unif.rvs(size=1,loc=.3,scale=.3)  #.7
+	m_ini_1=unif.rvs(size=m,loc=0, scale=15)  #  repeat(array(3.1),m,axis=0)
+	m_ini_2=unif.rvs(size=m,loc=0, scale=15)  # repeat(array(.5),m,axis=0)
 	#print("here")
 	x=append(append(append(fi_ini_1,supp_ini_1),w_ini), m_ini_1)
 	xp=append(append(append(fi_ini_2,supp_ini_2),w_ini0), m_ini_2)
 
 	while not support(x):
-	 	m_ini_1=uniform.rvs(size=m,loc=0, scale=3)
+	 	m_ini_1=unif.rvs(size=m,loc=0, scale=3)
 	 	x=append(append(append(fi_ini_1,supp_ini_1),w_ini), m_ini_1)
 
 
 	while not support(xp):
-	 	m_ini_2=uniform.rvs(size=m,loc=0, scale=3)
+	 	m_ini_2=unif.rvs(size=m,loc=0, scale=3)
 	 	xp=append(append(append(fi_ini_2,supp_ini_2),w_ini0), m_ini_2)
 
-	print("initial values were obtained")
 
 
 	################### MCMC
 	################## New MCMC test
-	print("Number of iterations,")
-	print(iterations)
+
 	thi = int((len(x)))*50 #100
-	print("Thining,")
-	print(thi)
 	burnin=10000*len(xp) #20000
-	print("Burnin,")
-	print(burnin)
 	print("Total iterations,")
 	print(burnin + iterations*thi)
 
 
-	leadchrono = pytwalk.pytwalk(n=len(x),U=obj,Supp=support)
+	leadchrono = pytwalk(n=len(x),U=obj,Supp=support)
 	i, k ,k0, n=0 , 0, 0, len(x)
 	U , Up = obj(x), obj(xp)
 	por=int(iterations/10.)
@@ -231,7 +206,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 		if (all([k<burnin,k % por2==0]) ):
 			print("burn in progress")
 			print int(100*(k+.0)/burnin)
-		if (uniform.rvs() < onemove[3] ):
+		if (unif.rvs() < onemove[3] ):
 			x, xp, ke, A, U, Up =onemove
 			k0+=1
 			if all([k % thi ==0 , k>int(burnin)]):
@@ -320,11 +295,10 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 
 
 
-#D="/home/endymion/Documents/Joan -Caro/SAI2016/"
+#D="/home/aquinom/Documents/Joan -Caro/SAI2016/"
 #plomo="SAI16Ra.csv"
 
-#plumMCMC(D,plomo,False,.01,100,2.5,2.,.7,1.5,10)
-
+#plumMCMC(D,plomo,False,0,.01,100,2.5,2.,.7,1.5,10,1,1,1,1,10,123)
 
 
 
@@ -332,12 +306,13 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 
 
 ########################################################
-###  This is the python implementation of the t-walk ###
+###  This is the python implementation of the t-walk ### 
 ###  By Andres Christen.                             ###
 ###  A generic self adjusting MCMC                   ###
 ###  see:  http://www.cimat.mx/~jac/twalk/           ###
 ###  see also twalktutorial.py                       ###
 ########################################################
+
 
 
 from numpy.random import uniform, normal
@@ -355,7 +330,7 @@ except:
 #### Some auxiliar functions and constants
 ## square of the norm.
 def SqrNorm(x):
-	return sum(x*x)
+	return sum(x*x) 
 
 log2pi = log(2*pi)
 log3 = log(3.0)
@@ -416,14 +391,14 @@ class pytwalk:
 
 		#### Kernel probabilities
 		self.Fw = cumsum(ww)
-
+		
 		#### Parameters for the propolsals
 		self.aw = aw  ### For the walk move
 		self.at = at ### For the Traverse move
 
 		#n1phi = 5 ### expected value of parameters to move
 		self.pphi = min( n, n1phi)/(1.0*n) ### Prob. of choosing each par.
-
+		
 		self.WAIT = 30
 
 
@@ -445,20 +420,20 @@ class pytwalk:
 			print "pytwalk: ERROR, initial point xp0 out of support."
 			return [ False, u, 0.0]
 		up = self.U(xp0)
-
+		
 		return [ True, u, up]
 
 
 
 	def Run( self, T, x0, xp0):
 		"""Run the twalk.
-
+		
 		   Run( T, x0, xp0),
 		   T = Number of iterations.
 		   x0, xp0, two initial points within the support,
-		   ***each entry of x0 and xp0 most be different***.
+		   ***each entry of x0 and xp0 most be different***. 
 		"""
-
+		
 		sec = time()
 		print "pytwalk: Running the twalk with %d iterations." % (T,), strftime("%a, %d %b %Y, %H:%M.", localtime(sec))
 
@@ -467,9 +442,9 @@ class pytwalk:
 
 		if (not(rt)):
 			return 0
+		
 
-
-		### send an estimation for the duration of the sampling if
+		### send an estimation for the duration of the sampling if 
 		### evaluating the ob. func. twice (in self._SetUpInitialValues) takes more than one second
 
 		sec2 = time() # last time we sent a message
@@ -483,7 +458,7 @@ class pytwalk:
 		self.T = T+1
 		self.Acc = zeros(6)
 		kercall = zeros(6) ## Times each kernel is called
-
+				
 		#### Make local references for less writing
 		n = self.n
 		Output = self.Output
@@ -491,7 +466,7 @@ class pytwalk:
 		Supp = self.Supp
 		Acc = self.Acc
 		Fw = self.Fw
-
+		
 		Output[ 0, 0:n] = x.copy()
 		Output[ 0, n] = u
 
@@ -500,17 +475,17 @@ class pytwalk:
 
 		### Sampling
 		for it in range(T):
-
+		
 			y, yp, ke, A, u_prop, up_prop = self.onemove( x, u, xp, up)
 
 			kercall[ke] += 1
-			kercall[5] += 1
-			if (uniform() < A):
+			kercall[5] += 1 
+			if (uniform() < A):  
 				x = y.copy()   ### Accept the propolsal y
 				u = u_prop
 				xp = yp.copy()   ### Accept the propolsal yp
 				up = up_prop
-
+				
 				Acc[ke] += 1
 				Acc[5] += 1
 
@@ -530,23 +505,23 @@ class pytwalk:
 				j1 += 1
 				j1 = min( j1, 10)  # check the time at least every 2^10=1024 iterations
 				ax = time()
-				if ((ax - sec2) > (1 << j)*self.WAIT): # Print an estimation every WAIT*2**j
+				if ((ax - sec2) > (1 << j)*self.WAIT): # Print an estimation every WAIT*2**j 
 
 					print "pytwalk: %10d iterations so far. " % (it,) + Remain( T, it, sec, ax)
 					sec2 = ax
 					j += 1
-					j1 -= 1 # check the time as often
+					j1 -= 1 # check the time as often 
 
 
 
-
+		
 		if (Acc[5] == 0):
 			print "pytwalk: WARNING,  all propolsals were rejected!"
 			print strftime("%a, %d %b %Y, %H:%M:%S.", localtime(time()))
 			return 0
 		else:
 			print "pytwalk: finished, " + strftime("%a, %d %b %Y, %H:%M:%S.", localtime(time()))
-
+			
 
 		for i in range(6):
 			if kercall[i] != 0:
@@ -557,17 +532,17 @@ class pytwalk:
 	def  onemove( self, x, u, xp, up):
 		"""One move of the twalk.  This is basically the raw twalk kernel.
 		   It is usefull if the twalk is needed inside a more complex MCMC.
-
+		
 		   onemove(x, u, xp, up),
 		   x, xp, two points WITHIN the support ***each entry of x0 and xp0 must be different***.
 		   and the value of the objective at x, and xp
 		   u=U(x), up=U(xp).
-
+		   
 		   It returns: [y, yp, ke, A, u_prop, up_prop]
 		   y, yp: the proposed jump
 		   ke: The kernel used, 0=nothing, 1=Walk, 2=Traverse, 3=Blow, 4=Hop
 		   A: the M-H ratio
-		   u_prop, up_prop: The values for the objective func. at the proposed jumps
+		   u_prop, up_prop: The values for the objective func. at the proposed jumps 
 		"""
 
 		#### Make local references for less writing
@@ -575,13 +550,13 @@ class pytwalk:
 		U = self.U
 		Supp = self.Supp
 		Fw = self.Fw
-
+		
 		ker = uniform() ### To choose the kernel to be used
 		ke = 1
 		A = 0
-
+		
 		## Kernel nothing exchange x with xp, not used
-		if ((0.0 <= ker) & (ker < Fw[0])):
+		if ((0.0 <= ker) & (ker < Fw[0])): 
 			ke = 0
 			y = xp.copy()
 			up_prop = u
@@ -593,13 +568,13 @@ class pytwalk:
 
 		## The Walk move
 		if ((Fw[0] <= ker) & (ker < Fw[1])):
-
+			
 			ke = 1
 
 			dir = uniform()
 
 			if ((0 <= dir) & (dir < 0.5)):  ## x as pivot
-
+		
 				yp = self.SimWalk( xp, x)
 
 				y = x.copy()
@@ -611,7 +586,7 @@ class pytwalk:
 				else:
 					up_prop = None
 					A = 0; ##out of support, not accepted
-
+						
 			else:  ## xp as pivot
 
 				y = self.SimWalk( x, xp)
@@ -640,8 +615,8 @@ class pytwalk:
 
 				y = x.copy()
 				u_prop = u
-
-				if Supp(yp):
+				
+				if Supp(yp):				
 					up_prop = U(yp)
 					if (self.nphi == 0):
 						A = 1 ###Nothing moved
@@ -669,20 +644,20 @@ class pytwalk:
 					A = 0 ##out of support, not accepted
 
 		### The Blow move
-		if ((Fw[2] <= ker) & (ker < Fw[3])):
+		if ((Fw[2] <= ker) & (ker < Fw[3])): 
 
 			ke = 3
 			dir = uniform()
 
 			if ((0 <= dir) & (dir < 0.5)):  ## x as pivot
 				yp = self.SimBlow( xp, x)
-
+				
 				y = x.copy()
 				u_prop = u
 				if ((Supp(yp)) & all(yp != x)):
 					up_prop = U(yp)
 					W1 = self.GBlowU( yp, xp,  x)
-					W2 = self.GBlowU( xp, yp,  x)
+					W2 = self.GBlowU( xp, yp,  x) 
 					A = exp((up - up_prop) + (W1 - W2))
 				else:
 					up_prop = None
@@ -700,23 +675,23 @@ class pytwalk:
 				else:
 					u_prop = None
 					A = 0 ##out of support, not accepted
-
+		
 
 		### The Hop move
-		if ((Fw[3] <= ker) & (ker < Fw[4])):
+		if ((Fw[3] <= ker) & (ker < Fw[4])): 
 
 			ke = 4
 			dir = uniform()
 
 			if ((0 <= dir) & (dir < 0.5)):  ## x as pivot
 				yp = self.SimHop( xp, x)
-
+				
 				y = x.copy()
 				u_prop = u
 				if ((Supp(yp)) & all(yp != x)):
 					up_prop = U(yp)
 					W1 = self.GHopU( yp, xp,  x)
-					W2 = self.GHopU( xp, yp,  x)
+					W2 = self.GHopU( xp, yp,  x) 
 					A = exp((up - up_prop) + (W1 - W2))
 				else:
 					up_prop = None
@@ -734,7 +709,7 @@ class pytwalk:
 				else:
 					u_prop = None
 					A = 0 ##out of support, not accepted
-
+		
 		return [y, yp, ke, A, u_prop, up_prop]
 
 
@@ -746,7 +721,7 @@ class pytwalk:
 	def SimWalk( self, x, xp):
 		aw = self.aw
 		n = self.n
-
+		
 		phi = (uniform(size=n) < self.pphi) ### parametrs to move
 		self.nphi = sum(phi)
 		z = zeros(n)
@@ -768,7 +743,7 @@ class pytwalk:
 
 	def SimTraverse( self,  x, xp, beta):
 		n = self.n
-
+	
 		phi = (uniform(size=n) < self.pphi)
 		self.nphi = sum(phi)
 
@@ -776,30 +751,30 @@ class pytwalk:
 		for i in range(n):
 			if (phi[i]):
 				rt[i] = xp[i] + beta*(xp[i] - x[i])
-
+			
 		return rt
 
 
 	### Used by the Blow kernel
 	def SimBlow( self, x, xp):
 		n = self.n
-
+	
 		self.phi = (uniform(size=n) < self.pphi)
 		self.nphi = sum(self.phi)
-
+	
 		self.sigma = max(self.phi*abs(xp - x))
 
 		rt = x.copy()
 		for i in range(n):
 			if (self.phi[i]):
 				rt[i] = xp[i] + self.sigma * normal()
-
+			
 		return rt
 
 
 	def GBlowU( self, h, x, xp):
 		nphi = self.nphi
-		self.sigma = max(self.phi*abs(xp - x)) #recalculate sigma, but same phi
+		self.sigma = max(self.phi*abs(xp - x)) #recalculate sigma, but same phi	
 		if (nphi > 0):
 			return (nphi/2.0)*log2pi + nphi*log(self.sigma) + 0.5*SqrNorm(h - xp)/(self.sigma**2)
 		else:
@@ -809,15 +784,15 @@ class pytwalk:
 	### Used by the Hop kernel
 	def SimHop( self, x, xp):
 		n = self.n
-
+	
 		self.phi = (uniform(size=n) < self.pphi)
 		self.nphi = sum(self.phi)
-
+	
 		self.sigma = max(self.phi*abs(xp - x))/3.0
 
 		rt = x.copy()
 		for i in range(n):
-			if (self.phi[i]):
+			if (self.phi[i]): 
 				rt[i] = x[i] + self.sigma * normal()
 
 		return rt
@@ -849,15 +824,15 @@ class pytwalk:
 			return self.T
 
 		iat = IAT( self.Output, cols=par, maxlag=maxlag, start=start, end=end)
-
+		
 		return iat
-
+	
 
 	def TS( self, par=-1, start=0, end=0):
 		"""Plot time sries of parameter par (defualt = log f) etc."""
 		if par == -1:
 			par = self.n
-
+		
 		if (end == 0):
 			end = self.T
 
@@ -880,10 +855,10 @@ class pytwalk:
 
 		print "Acceptance rates for the Walk, Traverse, Blow and Hop kernels:" + str(self.Acc[1:5])
 		print "Global acceptance rate: %7.5f" % self.Acc[5]
-
+		
 		iat = self.IAT( par=par, start=start, end=end)
 		print "Integrated Autocorrelation Time: %7.1f, IAT/n: %7.1f" % (iat, iat/self.n)
-
+		
 		self.TS( par=par, start=start, end=end)
 
 
@@ -906,7 +881,7 @@ class pytwalk:
 			ser = self.Output[ start:end, par]
 			if (xlab == None):
 				xlab = "parameter %d" % (par,)
-
+			
 		xlabel(xlab)
 		print "Mean for %s= %f" % ( xlab, mean(ser))
 		return hist( ser, bins=bins, normed=normed)
@@ -917,7 +892,7 @@ class pytwalk:
 		"""Saves the Output as a text file, starting at start (burn in), with thinning (thin)."""
 
 		print "Saving output, all pars. plus the U's in file", fnam
-
+		
 		savetxt( fnam, self.Output[ start::thin, ])
 
 
@@ -925,14 +900,14 @@ class pytwalk:
 	def Load( self, fnam, start=0, thin=1):
 		"""Loads the Output from a text file, typically written with the Save method.
 		   It will overwrite any other twalk output.  Updates the dimension n and the sample size T."""
-
+		
 		print "Loading output from file", fnam
-
+		
 		self.Output = loadtxt(fnam)
 		self.T, self.n = self.Output.shape
 		self.n -= 1
 
-
+		
 ##### A simple Random Walk M-H
 	def RunRWMH( self, T, x0, sigma):
 		"""Run a simple Random Walk M-H"""
@@ -950,29 +925,29 @@ class pytwalk:
 		### Set the array to place the iterations and the U's
 		self.Output = zeros((T+1, n+1))
 		self.Acc = zeros(6)
-
+				
 		#### Make local references for less writing
 		Output = self.Output
 		U = self.U
 		Supp = self.Supp
 		Acc = self.Acc
-
+		
 		Output[ 0, 0:n] = x.copy()
 		Output[ 0, n] = u
 
 		y = x.copy()
 		for it in range(T):
-			y = x + normal(size=n)*sigma ### each entry with sigma[i] variance
+			y = x + normal(size=n)*sigma ### each entry with sigma[i] variance 
 			if Supp(y):        ### If it is within the support of the objective
 				uprop = U(y)   ### Evaluate the objective
-				if (uniform() < exp(u-uprop)):
+				if (uniform() < exp(u-uprop)):  
 					x = y.copy()   ### Accept the propolsal y
 					u = uprop
 					Acc[5] += 1
 
 			Output[it+1,0:n] = x
 			Output[it+1,n] = u
-
+		
 		if (Acc[5] == 0):
 			print("pytwalk: WARNING,  all propolsals were rejected!")
 			return 0
@@ -988,7 +963,7 @@ class pytwalk:
 
 
 ############################################################################################
-#### Auxiliary functions to calculate Integrated autocorrelation times of a time series
+#### Auxiliary functions to calculate Integrated autocorrelation times of a time series 
 
 
 ####  Calculates an autocovariance 2x2 matrix at lag l in column c of matrix Ser with T rows
@@ -998,9 +973,9 @@ def AutoCov( Ser, c, la, T=0):
 		T = shape(Ser)[0]  ### Number of rows in the matrix (sample size)
 
 	return cov( Ser[0:(T-1-la), c], Ser[la:(T-1), c], bias=1)
-
-
-
+	
+	
+	
 
 #### Calculates the autocorrelation from lag 0 to lag la of columns cols (list)
 #### for matrix Ser
@@ -1011,29 +986,29 @@ def AutoCorr( Ser, cols=0, la=1):
 
 	#if ncols == 1:
 	#	cols = [cols]
-
+		
 	### Matrix to hold output
 	Out = matrix(ones((la+1)*ncols)).reshape( la+1, ncols)
-
+		
 	for c in range(ncols):
-		for l in range( 1, la+1):
-			Co = AutoCov( Ser, cols[c], l, T)
+		for l in range( 1, la+1):  
+			Co = AutoCov( Ser, cols[c], l, T) 
 			Out[l,c] = Co[0,1]/(sqrt(Co[0,0]*Co[1,1]))
-
+	
 	return Out
-
+	
 
 ### Makes an upper band matrix of ones, to add the autocorrelation matrix
-### gamma = auto[2*m+1,c]+auto[2*m+2,c] etc.
+### gamma = auto[2*m+1,c]+auto[2*m+2,c] etc. 
 ### MakeSumMat(lag) * AutoCorr( Ser, cols=c, la=lag) to make the gamma matrix
 def MakeSumMat(lag):
 	rows = (lag)/2   ### Integer division!
 	Out = mat(zeros([rows,lag], dtype=int))
-
-	for i in range(rows):
+	
+	for i in range(rows): 
 		Out[i,2*i] = 1
 		Out[i,2*i+1] = 1
-
+	
 	return Out
 
 
@@ -1043,10 +1018,10 @@ def Cutts(Gamma):
 	rows = shape(Gamma)[0]
 	Out = mat(zeros([1,cols], dtype=int))
 	Stop = mat(zeros([1,cols], dtype=bool))
-
+	
 	if (rows == 1):
 		return Out
-
+		
 	i = 0
 	###while (not(all(Stop)) & (i < (rows-1))):
 	for i in range(rows-1):
@@ -1056,8 +1031,8 @@ def Cutts(Gamma):
 			else:
 				Stop[0,j] = True
 		i += 1
-
-
+	
+	
 	return Out
 
 
@@ -1065,17 +1040,17 @@ def Cutts(Gamma):
 def AutoMaxlag( Ser, c, rholimit=0.05, maxmaxlag=20000):
 	Co = AutoCov( Ser, c, la=1)
 	rho = Co[0,1]/Co[0,0]  ### lag one autocorrelation
-
+	
 	### if autocorrelation is like exp(- lag/lam) then, for lag = 1
-	lam = -1.0/log(abs(rho))
-
+	lam = -1.0/log(abs(rho)) 
+	
 	### Our initial guess for maxlag is 1.5 times lam (eg. three times the mean life)
 	maxlag = int(floor(3.0*lam))+1
-
+	
 	### We take 1% of lam to jump forward and look for the
 	### rholimit threshold
 	jmp = int(ceil(0.01*lam)) + 1
-
+	
 	T = shape(Ser)[0]  ### Number of rows in the matrix (sample size)
 
 	while ((abs(rho) > rholimit) & (maxlag < min(T/2,maxmaxlag))):
@@ -1083,23 +1058,23 @@ def AutoMaxlag( Ser, c, rholimit=0.05, maxmaxlag=20000):
 		rho = Co[0,1]/Co[0,0]
 		maxlag = maxlag + jmp
 		###print("maxlag=", maxlag, "rho", abs(rho), "\n")
-
+		
 	maxlag = int(floor(1.3*maxlag));  #30% more
-
+	
 	if (maxlag >= min(T/2,maxmaxlag)): ###not enough data
 		fixmaxlag = min(min( T/2, maxlag), maxmaxlag)
 		print "AutoMaxlag: Warning: maxlag= %d > min(T/2,maxmaxlag=%d), fixing it to %d" % (maxlag, maxmaxlag, fixmaxlag)
 		return fixmaxlag
-
+	
 	if (maxlag <= 1):
 		fixmaxlag = 10
 		print "AutoMaxlag: Warning: maxlag= %d ?!, fixing it to %d" % (maxlag, fixmaxlag)
 		return fixmaxlag
-
+		
 	print "AutoMaxlag: maxlag= %d." % maxlag
 	return maxlag
-
-
+	
+	
 ### Find the IAT
 def IAT( Ser, cols=-1,  maxlag=0, start=0, end=0):
 
@@ -1108,7 +1083,7 @@ def IAT( Ser, cols=-1,  maxlag=0, start=0, end=0):
 		if (cols == -1):
 			cols = shape(Ser)[1]-1 ### default = last column
 		cols = [cols]
-
+	
 	if (end == 0):
 		end = shape(Ser)[0]
 
@@ -1119,32 +1094,42 @@ def IAT( Ser, cols=-1,  maxlag=0, start=0, end=0):
 	#print("IAT: Maxlag=", maxlag)
 
 	#Ga = MakeSumMat(maxlag) * AutoCorr( Ser[start:end,:], cols=cols, la=maxlag)
-
+	
 	Ga = mat(zeros((maxlag/2,ncols)))
 	auto = AutoCorr( Ser[start:end,:], cols=cols, la=maxlag)
-
+	
 	### Instead of producing the maxlag/2 X maxlag MakeSumMat matrix, we calculate the gammas like this
 	for c in range(ncols):
 		for i in range(maxlag/2):
 			Ga[i,c] = auto[2*i,c]+auto[2*i+1,c]
-
+	
 	cut = Cutts(Ga)
 	nrows = shape(Ga)[0]
-
+		
 	ncols = shape(cut)[1]
 	Out = -1.0*mat(ones( [1,ncols] ))
-
+	
 	if any((cut+1) == nrows):
 		print("IAT: Warning: Not enough lag to calculate IAT")
-
+	
 	for c in range(ncols):
 		for i in range(cut[0,c]+1):
 			Out[0,c] += 2*Ga[i,c]
-
+	
 	return Out
 
 
 
 ############################################################################################
+
+
+
+
+
+
+
+
+
+
 
 

@@ -10,13 +10,35 @@
 #' @param Bqkg is True when the data is in the form Bq/kg, if it False the data would be consider as ...
 
 #' @export
-runPlum=function(folder,Data,iterations=1.5e+3,by=1.5,number_supported=FALSE,
+runPlum=function(Data=TRUE,folder=TRUE,iterations=1.5e+3,by=1.5,number_supported=FALSE,
                  detection_limit=.05,memory_shape=4., memory_mean=.7,
                  acc_shape=1.5,acc_mean=20,fi_mean=50,fi_acc=2,
                  As_mean=20,As_acc=2,resolution=200,seeds=12345678){
+  ##checks if data needs to be simulated
+  if (Data==TRUE & folder==TRUE){
+    folder=Data_sim() 
+    Data=folder[2]
+    folder=folder[1]
+  }else if(Data==TRUE & typeof(folder)=="character"){
+    folder=Data_sim(folder =folder) 
+    Data=folder[2]
+    folder=folder[1]
+  }
+    
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  write.table(Lead,paste(folder,Data,sep=""),sep=",",col.names = F,row.names = F)
+  Lead=read.table(paste(folder,Data,sep=""),sep=",")
 
-Lead=read.table(paste(folder,Data,sep=""),sep=",")
+  
 
+
+
+
+folder=paste(normalizePath(folder),"/",sep="")
+
+
+print("working folder is")
+print(folder)
 if(number_supported==FALSE){
   if(length(Lead[1,])==5){
     cat("You do not have 226Ra cocentrations.")
@@ -68,8 +90,9 @@ if (usemod==1){
   MCMC=paste(modirec,"/","ModelMCMC_Ra.py",sep="")
 }
 
-python.load(twalk)
+
 python.load(MCMC)
+python.load(twalk)
 dir.create(paste(folder,"Results",sep = ""))
 
 python.call("plumMCMC",folder,Data,FALSE,    number_supported   ,    detection_limit   ,  iterations,
@@ -189,6 +212,10 @@ fullchronology(folder = folder,Data = Data,supp_type = usemod,resolution = resol
                acc_shape = acc_shape,acc_mean = acc_mean,
                fi_mean = fi_mean,fi_acc = fi_acc,
                As_mean = As_mean,As_acc = As_acc)
+
+Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+Col.names=c("Depth (cm)","Density g/cm^3","210Pb (Bq/kg)","sd(210Pb)","Thickness (cm)","226Ra (Bq/kg)","sd(226Ra)")
+write.table(Lead,paste(folder,Data,sep=""),sep=",",col.names = Col.names,row.names = F)
 
 }
 

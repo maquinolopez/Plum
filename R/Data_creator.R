@@ -2,7 +2,7 @@
 
 timefunction<- function (x)(  (x^2)/3 + x/2)
 #'export
-Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE){
+Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE,crea.file=T,folder=T){
   dptS=depths[length(depths)]
   lambda=0.03114
   if (typeof(supp)=="character"){
@@ -106,9 +106,31 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
   segments(depths, suppo+3, x1 = depths, y1 = suppo-3,col="red")
 
 
-  DATOS=matrix(c(depths,(density/10),sample1un,uncer,rep(thick,length(depths)),suppo,rep(3,length(suppo)) ),nrow=length(depths),byrow = FALSE)
-  return(DATOS)
+  sim_data=matrix(c(depths,(density/10),sample1un,uncer,rep(thick,length(depths)),suppo,rep(3,length(suppo)) ),nrow=length(depths),byrow = FALSE)
+  
+  
+  if(crea.file==TRUE){
+    if(folder==TRUE){
+      if(!dir.exists("~/Plum/")){
+        dir.create("~/Plum/")
+      }
+      ranind=floor(runif(1,10,99))
+      newfolder=paste("~/Plum/","Simulation-",ranind,sep="" )
+      if(!dir.exists(newfolder)){
+        dir.create(newfolder)
+        folder=paste(newfolder,"/",sep="")
+      }else{folder=paste(newfolder,"/",sep="")}
 
+    }else {ranind=floor(runif(1,10,99)) }
+    
+    Col.names=c("Depth (cm)","Density g/cm^3","210Pb (Bq/kg)","sd(210Pb)","Thickness (cm)","226Ra (Bq/kg)","sd(226Ra)")
+    datname=paste("Simulation-",ranind,".csv",sep="")
+    write.table(sim_data,file = paste(folder,datname,sep=""),sep=",",col.names=Col.names, row.names=F)
+  }
+  print("Simulated data is located at" )
+  print(folder)
+  return(c(folder,datname))
+  
 }
 
 

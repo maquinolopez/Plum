@@ -13,7 +13,7 @@
 runPlum=function(Data=TRUE,folder=TRUE,iterations=1.5e+3,by=1.5,number_supported=FALSE,
                  detection_limit=.05,memory_shape=4., memory_mean=.7,
                  acc_shape=1.5,acc_mean=20,fi_mean=50,fi_acc=2,
-                 As_mean=20,As_acc=2,resolution=200,seeds=12345678){
+                 As_mean=20,As_acc=2,resolution=200,seeds=12345678,thin=30,burnin=10000){
   ##checks if data needs to be simulated
   if (Data==TRUE & folder==TRUE){
     folder=Data_sim() 
@@ -97,7 +97,7 @@ dir.create(paste(folder,"Results",sep = ""))
 
 python.call("plumMCMC",folder,Data,FALSE,    number_supported   ,    detection_limit   ,  iterations,
    by ,memory_shape     ,memory_mean    ,acc_shape       ,acc_mean,fi_mean,fi_acc,As_mean,As_acc
-   ,resolution,seeds)
+   ,resolution,seeds,thin,burnin)
 
 
 ##############

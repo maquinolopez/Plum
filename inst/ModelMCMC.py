@@ -5,7 +5,7 @@ from numpy.random import seed
 
 
 
-def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds):
+def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin):
     seed(int(seeds))
     fimean=fi_mean
     shapefi=fi_acc
@@ -184,10 +184,10 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	################## New MCMC test
     print("the number of itrations,")
     print(iterations)
-    thi = int((len(x)))*25 #100
+    thi = int((len(x)))*25 #thi_v = 25 or 50
     print("Thining,")
     print(thi)
-    burnin=10000*len(xp) #20000 Make this changable variables 
+    burnin=burnin*len(xp) #20000 Make this changable variables 
     print("Burnin,")
     print(burnin)
     print("Total iterations,")

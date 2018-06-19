@@ -117,8 +117,11 @@ deptsSeq=seq(from=0,to=Depths[length(Depths)],Depths[length(Depths)]/resolution)
 deptsSeq=deptsSeq
 diffSep=(deptsSeq[2]-deptsSeq[1])/2
 TotSeq=length(Ages[,1])
+X11()
+plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
 
-pdf(paste(folder,'Chronologynew.pdf',sep=""))
+
+pdf(paste(folder,'Chronologylines.pdf',sep=""))
 plot(-1,-1, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxA),xlab = "Depth (cm)",ylab="Age (years)" )
 
 for (i2 in 1:(resolution-1)){
@@ -133,19 +136,13 @@ lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1)
 dev.off()
 
 
-pdf(paste(folder,'Slopes.pdf',sep=""))
-maxS=max(Slopes)+.10
-plot(-10,-10, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxS),xlab = "Depth (cm)",ylab="Slopes (Accumulations)" )
-for (i in 1:(iterations-1)){
-  lines(Depths,as.numeric(c(0,Slopes[i,])),type="l",col=rgb(0,0,0,.01), lwd=2)
-}
-dev.off()
-
-
-
-
-
-
+# pdf(paste(folder,'Slopes.pdf',sep=""))
+# maxS=max(Slopes)+.10
+# plot(-10,-10, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxS),xlab = "Depth (cm)",ylab="Slopes (Accumulations)" )
+# for (i in 1:(iterations-1)){
+#   lines(Depths,as.numeric(c(0,Slopes[i,])),type="l",col=rgb(0,0,0,.01), lwd=2)
+# }
+# dev.off()
 # pdf(paste(folder,'Chronology.pdf',sep=""))
 # plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),xlab = "Depth (cm)",ylab="Age (years)")
 # for (i in 1:(iterations-1)){
@@ -157,40 +154,40 @@ dev.off()
 # dev.off()
 
 
-
-
-pdf(paste(folder,'Fi.pdf',sep=""))
-plot(as.numeric(Output[-1,1]),type="l",main="fi",xlab="",ylab="")
-dev.off()
-pdf(paste(folder,'Supported.pdf',sep=""))
-plot(as.numeric(Output[-1,2]),type="l",main="Supported Act",xlab="",ylab="")
-dev.off()
+# 
+# 
+# pdf(paste(folder,'Fi.pdf',sep=""))
+# plot(as.numeric(Output[-1,1]),type="l",main="fi",xlab="",ylab="")
+# dev.off()
+# pdf(paste(folder,'Supported.pdf',sep=""))
+# plot(as.numeric(Output[-1,2]),type="l",main="Supported Act",xlab="",ylab="")
+# dev.off()
 pdf(paste(folder,'Energy.pdf',sep=""))
 plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
 dev.off()
-pdf(paste(folder,'Memory.pdf',sep=""))
-plot(as.numeric(Output[-1,3]),type="l",main="Memory",xlab="",ylab="")
-dev.off()
-
-pdf(paste(folder,'Fi hist.pdf',sep=""))
-hist(as.numeric(Output[-1,1]),breaks=50,probability=T,main="fi",xlab="")
-dev.off()
-pdf(paste(folder,'Supported hist.pdf',sep=""))
-hist(as.numeric(Output[-1,2]),breaks=50,probability=T,main="Supported Act",xlab="")
-dev.off()
-pdf(paste(folder,'Energy hist.pdf',sep=""))
-hist(as.numeric(Output[-1,num_var]),breaks=50,main="Energy",xlab="")
-dev.off()
-pdf(paste(folder,'Memory hist.pdf',sep=""))
-hist(as.numeric(Output[-1,3]),breaks=50,main="Memory",probability=T,xlim=c(0,1),xlab="")
-lines(seq(0,100,.01),dbeta(seq(0,100,.01),4,1.5),col="red")
-dev.off()
-
-
-pdf(paste(folder,'acc hist.pdf',sep=""))
-hist(as.numeric(unlist(Output[-1,-c(1,2,3,num_var)])),breaks=50,main="Acc",probability=T,xlab="")
-lines(seq(0,100,.5),dgamma(seq(0,100,.5),1.5,scale=20/1.5),col="red")
-dev.off()
+# pdf(paste(folder,'Memory.pdf',sep=""))
+# plot(as.numeric(Output[-1,3]),type="l",main="Memory",xlab="",ylab="")
+# dev.off()
+# 
+# pdf(paste(folder,'Fi hist.pdf',sep=""))
+# hist(as.numeric(Output[-1,1]),breaks=50,probability=T,main="fi",xlab="")
+# dev.off()
+# pdf(paste(folder,'Supported hist.pdf',sep=""))
+# hist(as.numeric(Output[-1,2]),breaks=50,probability=T,main="Supported Act",xlab="")
+# dev.off()
+# pdf(paste(folder,'Energy hist.pdf',sep=""))
+# hist(as.numeric(Output[-1,num_var]),breaks=50,main="Energy",xlab="")
+# dev.off()
+# pdf(paste(folder,'Memory hist.pdf',sep=""))
+# hist(as.numeric(Output[-1,3]),breaks=50,main="Memory",probability=T,xlim=c(0,1),xlab="")
+# lines(seq(0,100,.01),dbeta(seq(0,100,.01),4,1.5),col="red")
+# dev.off()
+# 
+# 
+# pdf(paste(folder,'acc hist.pdf',sep=""))
+# hist(as.numeric(unlist(Output[-1,-c(1,2,3,num_var)])),breaks=50,main="Acc",probability=T,xlab="")
+# lines(seq(0,100,.5),dgamma(seq(0,100,.5),1.5,scale=20/1.5),col="red")
+# dev.off()
 
 
 
@@ -205,8 +202,7 @@ dev.off()
 
 
 par(mfrow=c(1,1))
-
-
+X11()
 fullchronology(folder = folder,Data = Data,supp_type = usemod,resolution = resolution,
                memory_shape = memory_shape,memory_mean =  memory_mean,
                acc_shape = acc_shape,acc_mean = acc_mean,

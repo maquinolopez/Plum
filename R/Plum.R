@@ -83,7 +83,7 @@ if(number_supported==FALSE){
 modirec=path.package("Plum", quiet = T)
 
 
-twalk=paste(modirec,"/","pytwalk.py",sep="")
+#twalk=paste(modirec,"/","pytwalk.py",sep="")
 if (usemod==1){
   MCMC=paste(modirec,"/","ModelMCMC.py",sep="")
 }else if(usemod==2){

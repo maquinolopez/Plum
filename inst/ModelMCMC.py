@@ -1,7 +1,5 @@
     #####################  Librerias
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
-import pytwalk
-#import cProfile
 from scipy.stats import uniform as unif
 from numpy.random import seed
 
@@ -186,7 +184,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	################## New MCMC test
     print("the number of itrations,")
     print(iterations)
-    thi = int((len(x)))*50 #100
+    thi = int((len(x)))*25 #100
     print("Thining,")
     print(thi)
     burnin=10000*len(xp) #20000 Make this changable variables 

@@ -2,8 +2,6 @@
 #include <Python.h>
 	#####################  Librerias
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
-#import pytwalk
-#import cProfile
 from scipy.stats import uniform as unif
 from numpy.random import seed
 
@@ -186,7 +184,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	################### MCMC
 	################## New MCMC test
 
-	thi = int((len(x)))*50 #100
+	thi = int((len(x)))*25 #100
 	burnin=10000*len(xp) #20000
 	print("Total iterations,")
 	print(burnin + iterations*thi)

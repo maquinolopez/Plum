@@ -202,7 +202,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 		onemove=leadchrono.onemove(x, U, xp, Up)
 		k+= 1
 		if (all([k<burnin,k % por2==0]) ):
-			print("burn in progress")
+			print("burn-in progress")
 			print int(100*(k+.0)/burnin)
 		if (unif.rvs() < onemove[3] ):
 			x, xp, ke, A, U, Up =onemove
@@ -228,7 +228,6 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	#Output=array(Output)
 	print("Acceptance rate")
 	print(k0/(i+.0))
-	print("The twalk did", k, "iterations")
 
 
 	##################

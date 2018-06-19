@@ -184,7 +184,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	################## New MCMC test
     
 
-    thi = int((len(x)))*thin #thi 
+    thi = int((len(x)))*thi #thi 
     burnin=burnin*len(xp) 
     print("Total iterations,")
     print(burnin + iterations*thi)

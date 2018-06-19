@@ -92,7 +92,7 @@ if (usemod==1){
 
 
 python.load(MCMC)
-python.load(twalk)
+#python.load(twalk)
 dir.create(paste(folder,"Results",sep = ""))
 
 python.call("plumMCMC",folder,Data,FALSE,    number_supported   ,    detection_limit   ,  iterations,

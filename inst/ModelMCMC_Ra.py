@@ -2,8 +2,6 @@
 #include <Python.h>
 	#####################  Librerias
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
-#import pytwalk
-#import cProfile
 from scipy.stats import uniform as unif
 from numpy.random import seed
 
@@ -12,7 +10,7 @@ from numpy.random import seed
 	#import csv
 	##################### Read calibration curve
 
-def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds):
+def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin):
 	seed(int(seeds))
 	fimean=fi_mean
 	shapefi=fi_acc
@@ -186,8 +184,8 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	################### MCMC
 	################## New MCMC test
 
-	thi = int((len(x)))*50 #100
-	burnin=10000*len(xp) #20000
+	thi = int((len(x)))*thi #thi = 25, 50, 100
+	burnin=len(xp) *burnin  #burin 10000 20000
 	print("Total iterations,")
 	print(burnin + iterations*thi)
 
@@ -204,7 +202,7 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 		onemove=leadchrono.onemove(x, U, xp, Up)
 		k+= 1
 		if (all([k<burnin,k % por2==0]) ):
-			print("burn in progress")
+			print("burn-in progress")
 			print int(100*(k+.0)/burnin)
 		if (unif.rvs() < onemove[3] ):
 			x, xp, ke, A, U, Up =onemove
@@ -230,7 +228,6 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 	#Output=array(Output)
 	print("Acceptance rate")
 	print(k0/(i+.0))
-	print("The twalk did", k, "iterations")
 
 
 	##################

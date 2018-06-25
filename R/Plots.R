@@ -1,20 +1,38 @@
 #' @export
 
-fullchronology= function(folder,Data,resolution=200,supp_type=1,
-                         memory_shape=4., memory_mean=.7,
-                         acc_shape=1.5,acc_mean=20,
-                         fi_mean=50,fi_acc=2,
-                         As_mean=20,As_acc=2){
+fullchronology= function(folder){
+  
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
 
+  Data=paste(Core.name,".csv",sep="")
 
   par(mfrow=c(1,1))
-  Ages=read.table(paste(folder,"Results/dates.csv",sep=""),sep=" ")
-  intervals=read.table(paste(folder,"Results/intervals.csv",sep=""),sep=",")
-  Depths=as.numeric(read.table(paste(folder,"Results/depths.csv",sep=""),sep=",") )
-  Output=read.table(paste(folder,"Results/Results_output.csv",sep=""),sep=",")
-  Lead=read.table(paste(folder,Data,sep=""),sep=",")
-  Plotval=read.table(paste(folder,"Results/Graphs.csv",sep=""),sep=",")
-  Slopes=read.table(paste(folder,"Results/Slopes.csv",sep=""),sep=",")
+  Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
+  intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
+  Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  Plotval=read.table(paste(folder,"Results ",Core.name,"/Graphs.csv",sep=""),sep=",")
+  Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
   num_var=length(Output[0,])
   if(length(Lead[1,])==5){
     Ran=1  } else if(length(Lead[1,])==7){
@@ -55,14 +73,15 @@ fullchronology= function(folder,Data,resolution=200,supp_type=1,
   polygon(d, col=gray(.6))
   lines(seq(0,100,.05),dgamma(seq(0,100,.05),shape=As_acc,scale=As_mean/As_acc),col="green")
   }else {
-    min1=min(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.1
-    max1=max(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.1
+    min1=min(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
+    max1=max(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
     plot(0,0,xlim=c(Lead[1,1],Lead[Ran,1]),ylim=c(min1,max1),xlab="Depth (cm)",ylab="",main="Supported 210Pb",xaxs="i",yaxs="i")
     for (k in 1:Ran) {
       points(rep(Lead[k,1],length(Output[-1,1+k])), Output[-1,1+k],pch=19,col=rgb(0,0,0,.03) )
-      points(Lead[k,1],Lead[k,6],col="red",pch=18)
-
+      points(Lead[k,1],Lead[k,6],col="red",pch=18,cex=.5)
+      points(Lead[k,1],mean(Output[-1,1+k]),col="blue",pch=18,cex=.5)
     }
+    
   }
 
   d <- density(as.numeric(Output[-1,1]))
@@ -70,6 +89,53 @@ fullchronology= function(folder,Data,resolution=200,supp_type=1,
   polygon(d, col=gray(.6))
   lines(seq(0,350,.05),dgamma(seq(0,350,.05),shape=fi_acc,scale=fi_mean/fi_acc),col="green")
 
+  
+  chronologyresol(folder)
+
+  par(mfrow=c(1,1))
+}
+
+
+#' @export
+chronologyresol<- function(folder){
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  
+  Data=paste(Core.name,".csv",sep="")
+  
+  Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
+  intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
+  Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  Plotval=read.table(paste(folder,"Results ",Core.name,"/Graphs.csv",sep=""),sep=",")
+  Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
+  maxA=max(Ages[,length(Ages[1,])])+.10
+  ageSeq=seq(from=0,to=maxA,maxA/resolution)
+  deptsSeq=seq(from=0,to=Depths[length(Depths)],Depths[length(Depths)]/resolution)
+  deptsSeq=deptsSeq
+  diffSep=(deptsSeq[2]-deptsSeq[1])/2
+  TotSeq=length(Ages[,1])
+  memory_shape2=(memory_shape*(1-memory_mean) )/memory_mean
+  
   plot(-1,-1, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxA),xlab = "Depth (cm)",ylab="Age (years)" ,
        xaxs="i",yaxs="i",main= gsub("\\..*","",Data))
   for (i2 in 1:(resolution-1)){
@@ -84,20 +150,46 @@ fullchronology= function(folder,Data,resolution=200,supp_type=1,
   for (i in 1:length(Lead[,1])){
     rug(Lead[i,1], lwd = Lead[i,5],col = "blue")
   }
-
-  par(mfrow=c(1,1))
 }
+  
+
+
+
 
 
 #' @export
-chronologylinesP= function(folder,Data,...){
-  Ages=read.table(paste(folder,"Results/dates.csv",sep=""),sep=" ")
-  intervals=read.table(paste(folder,"Results/intervals.csv",sep=""),sep=",")
-  Depths=as.numeric(read.table(paste(folder,"Results/depths.csv",sep=""),sep=",") )
-  Output=read.table(paste(folder,"Results/Results_output.csv",sep=""),sep=",")
-  Lead=read.table(paste(folder,Data,sep=""),sep=",")
-  Plotval=read.table(paste(folder,"Results/Graphs.csv",sep=""),sep=",")
-  Slopes=read.table(paste(folder,"Results/Slopes.csv",sep=""),sep=",")
+chronologylinesP= function(folder,...){
+  
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  Data=paste(Core.name,".csv",sep="")
+  
+  par(mfrow=c(1,1))
+  Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
+  intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
+  Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  Plotval=read.table(paste(folder,"Results ",Core.name,"/Graphs.csv",sep=""),sep=",")
+  Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
   num_var=length(Output[0,])
   iterations=length(Ages[,1])
 
@@ -119,14 +211,38 @@ chronologylinesP= function(folder,Data,...){
 
 
 #' @export
-chronologylines= function(folder,Data,...){
-  Ages=read.table(paste(folder,"Results/dates.csv",sep=""),sep=" ")
-  intervals=read.table(paste(folder,"Results/intervals.csv",sep=""),sep=",")
-  Depths=as.numeric(read.table(paste(folder,"Results/depths.csv",sep=""),sep=",") )
-  Output=read.table(paste(folder,"Results/Results_output.csv",sep=""),sep=",")
-  Lead=read.table(paste(folder,Data,sep=""),sep=",")
-  Plotval=read.table(paste(folder,"Results/Graphs.csv",sep=""),sep=",")
-  Slopes=read.table(paste(folder,"Results/Slopes.csv",sep=""),sep=",")
+chronologylines= function(folder,...){
+  
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  Data=paste(Core.name,".csv",sep="")
+  
+  par(mfrow=c(1,1))
+  Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
+  intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
+  Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  Plotval=read.table(paste(folder,"Results ",Core.name,"/Graphs.csv",sep=""),sep=",")
+  Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
   num_var=length(Output[0,])
   iterations=length(Ages[,1])
 
@@ -136,9 +252,9 @@ plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages
 for (i in 1:(iterations-1)){
   lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
 }
-lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1)
-lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1)
-lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1)
+lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1,col="red")
+lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
+lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
 for (i in 1:length(Lead[,1])){
   rug(Lead[i,1], lwd = Lead[i,5],col = "blue")
 }
@@ -149,10 +265,33 @@ for (i in 1:length(Lead[,1])){
 
 
 #' @export
-slopes= function(folder,Data){
-    Depths=as.numeric(read.table(paste(folder,"Results/depths.csv",sep=""),sep=",") )
-    Slopes=read.table(paste(folder,"Results/Slopes.csv",sep=""),sep=",")
-    iterations=length(Slopes[,1])
+slopes= function(folder,...){
+  
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  Data=paste(Core.name,".csv",sep="")
+  
+  Depths=as.numeric(read.table(paste(folder,"Results",Core.name,"/depths.csv",sep=""),sep=",") )
+  Slopes=read.table(paste(folder,"Results",Core.name,"/Slopes.csv",sep=""),sep=",")
+  iterations=length(Slopes[,1])
   maxS=max(Slopes)+.10
   plot(-10,-10, xlim=c(Depths[length(Depths)]),ylim = c(0, maxS),xlab = "Depth (cm)",ylab="Slopes (Accumulations)" )
   for (i in 1:(iterations-1)){
@@ -164,11 +303,35 @@ slopes= function(folder,Data){
 }
 
 #' @export
-ageof=function(x,interval=.95,folder){
+ageof=function(folder,x,interval=.95){
+  
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
   if(x!=0){
-    Ages=read.table(paste(folder,"Results/dates.csv",sep=""),sep=" ")
-    Depths=as.numeric(read.table(paste(folder,"Results/depths.csv",sep=""),sep=",") )
-    Slopes=read.table(paste(folder,"Results/Slopes.csv",sep=""),sep=",")
+    Data=paste(Core.name,".csv",sep="")
+    
+    Ages=read.table(paste(folder,"Results",Core.name,"/dates.csv",sep=""),sep=" ")
+    Depths=as.numeric(read.table(paste(folder,"Results",Core.name,"/depths.csv",sep=""),sep=",") )
+    Slopes=read.table(paste(folder,"Results",Core.name,"/Slopes.csv",sep=""),sep=",")
+    
     depfix=which(Depths<x)
     depfix=depfix[length(depfix)]
     m2=Slopes[,depfix]

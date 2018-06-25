@@ -1,7 +1,29 @@
 #' @export
-
 fullchronology= function(folder){
+
+  layout(matrix(c(1,1,2,2,3,3,4,4,
+                  1,1,2,2,3,3,4,4,
+                  5,5,5,5,5,5,5,5,
+                  5,5,5,5,5,5,5,5,
+                  5,5,5,5,5,5,5,5,
+                  5,5,5,5,5,5,5,5,
+                  5,5,5,5,5,5,5,5), 7, 8, byrow = TRUE))
+
+  memory.pos.plot( folder)
+
+  acc.pos.plot(folder)
+
+  supported.pos.plot(folder)
+
+  supply.pos.plot(folder)
   
+  chronologylines(folder)
+
+  par(mfrow=c(1,1))
+}
+
+#' @export
+acc.pos.plot=function(folder){
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -22,13 +44,125 @@ fullchronology= function(folder){
       assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
     }
   }
-
+  
   Data=paste(Core.name,".csv",sep="")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  num_var=length(Output[0,])
+  if(length(Lead[1,])==5){
+    Ran=1  } else if(length(Lead[1,])==7){
+      if(supp_type==1){Ran=1}else{
+        Ran=length(Lead[,1])}}
+  
 
-  par(mfrow=c(1,1))
-  Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
-  intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
-  Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+  d <- density(as.numeric(unlist(Output[-1,-c(c(1:(Ran+2)),num_var)])))
+  plot(d,xlab="",main="Acc",ylab = "",xlim=c(0,80),xaxs="i",yaxs="i")
+  polygon(d, col=gray(.6))
+  lines(seq(0,100,.5),dgamma(seq(0,100,.5),shape=acc_shape,scale=acc_mean/acc_shape),col="green")
+}
+
+#' @export
+memory.pos.plot=function(folder){
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  
+  Data=paste(Core.name,".csv",sep="")
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  num_var=length(Output[0,])
+  if(length(Lead[1,])==5){
+    Ran=1  } else if(length(Lead[1,])==7){
+      if(supp_type==1){Ran=1}else{
+        Ran=length(Lead[,1])}}
+  
+  memory_shape2=(memory_shape*(1-memory_mean) )/memory_mean
+  
+  d <- density(as.numeric(Output[-1,(Ran+2)]))
+  plot(d, xlab="",main="Memory",ylab = "",xlim=c(0,1),xaxs="i",yaxs="i")
+  polygon(d, col=gray(.6))
+  lines(seq(0,1,.01),dbeta(x = seq(0,1,.01),shape1 = memory_shape,shape2 = memory_shape2),col="green")
+  
+}
+
+#' @export
+supply.pos.plot= function(folder){
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  
+  Data=paste(Core.name,".csv",sep="")
+  Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
+  num_var=length(Output[0,])
+
+  d <- density(as.numeric(Output[-1,1]))
+  plot(d,xlab="",main="Supply of 210Pb",ylab = "",xaxs="i",yaxs="i")
+  polygon(d, col=gray(.6))
+  lines(seq(0,350,.05),dgamma(seq(0,350,.05),shape=fi_acc,scale=fi_mean/fi_acc),col="green")
+  
+}
+
+
+#' @export
+supported.pos.plot=function(folder){
+  foldertmp=length(unlist(strsplit(folder,'')))
+  foldertmp=substr(folder,foldertmp,foldertmp)
+  if(foldertmp=="/"){
+    settings.file=read.table(file = paste(folder,"settings.txt",sep=""))  
+  }else{
+    settings.file=read.table(file = paste(folder,"/settings.txt",sep="")) 
+  }
+  variables=c("Core.name","iterations", 'by', 'number_supported', 'detection_limit', 'memory_shape','memory_mean',
+              'acc_shape','acc_mean','fi_mean','fi_acc','As_mean','As_acc','resolution','seeds','thin','burnin','supp_type')
+  for (i4 in 1:length(variables)){
+    if (i4==1){
+      assign(variables[i4], droplevels(settings.file[i4,1]))
+    }else if(i4==4){
+      if(droplevels(settings.file[i4,1])==FALSE){
+        assign(variables[i4], droplevels(settings.file[i4,1]))
+      }else{assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))}
+    }else{
+      assign(variables[i4], as.numeric(levels(droplevels(settings.file[i4,1]))))
+    }
+  }
+  
+  Data=paste(Core.name,".csv",sep="")
+  
   Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
   Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
   Plotval=read.table(paste(folder,"Results ",Core.name,"/Graphs.csv",sep=""),sep=",")
@@ -37,41 +171,13 @@ fullchronology= function(folder){
   if(length(Lead[1,])==5){
     Ran=1  } else if(length(Lead[1,])==7){
       if(supp_type==1){Ran=1}else{
-      Ran=length(Lead[,1])}}
-
-  maxA=max(Ages[,length(Ages[1,])])+.10
-  ageSeq=seq(from=0,to=maxA,maxA/resolution)
-  deptsSeq=seq(from=0,to=Depths[length(Depths)],Depths[length(Depths)]/resolution)
-  deptsSeq=deptsSeq
-  diffSep=(deptsSeq[2]-deptsSeq[1])/2
-  TotSeq=length(Ages[,1])
-  memory_shape2=(memory_shape*(1-memory_mean) )/memory_mean
-
-
-  layout(matrix(c(1,1,2,2,3,3,4,4,
-                  1,1,2,2,3,3,4,4,
-                  5,5,5,5,5,5,5,5,
-                  5,5,5,5,5,5,5,5,
-                  5,5,5,5,5,5,5,5,
-                  5,5,5,5,5,5,5,5,
-                  5,5,5,5,5,5,5,5), 7, 8, byrow = TRUE))
-
-  d <- density(as.numeric(Output[-1,(Ran+2)]))
-  plot(d, xlab="",main="Memory",ylab = "",xlim=c(0,1),xaxs="i",yaxs="i")
-  polygon(d, col=gray(.6))
-  lines(seq(0,1,.01),dbeta(x = seq(0,1,.01),shape1 = memory_shape,shape2 = memory_shape2),col="green")
-
-
-  d <- density(as.numeric(unlist(Output[-1,-c(c(1:(Ran+2)),num_var)])))
-  plot(d,xlab="",main="Acc",ylab = "",xlim=c(0,80),xaxs="i",yaxs="i")
-  polygon(d, col=gray(.6))
-  lines(seq(0,100,.5),dgamma(seq(0,100,.5),shape=acc_shape,scale=acc_mean/acc_shape),col="green")
+        Ran=length(Lead[,1])}}
 
   if(Ran==1){
-  d <- density(as.numeric(Output[-1,2]))
-  plot(d,xlab="",main="Supported Act",ylab = "",xaxs="i",yaxs="i")
-  polygon(d, col=gray(.6))
-  lines(seq(0,100,.05),dgamma(seq(0,100,.05),shape=As_acc,scale=As_mean/As_acc),col="green")
+    d <- density(as.numeric(Output[-1,2]))
+    plot(d,xlab="",main="Supported Act",ylab = "",xaxs="i",yaxs="i")
+    polygon(d, col=gray(.6))
+    lines(seq(0,100,.05),dgamma(seq(0,100,.05),shape=As_acc,scale=As_mean/As_acc),col="green")
   }else {
     min1=min(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
     max1=max(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
@@ -81,19 +187,12 @@ fullchronology= function(folder){
       points(Lead[k,1],Lead[k,6],col="red",pch=18,cex=.5)
       points(Lead[k,1],mean(Output[-1,1+k]),col="blue",pch=18,cex=.5)
     }
-    
   }
-
-  d <- density(as.numeric(Output[-1,1]))
-  plot(d,xlab="",main="Supply of 210Pb",ylab = "",xaxs="i",yaxs="i")
-  polygon(d, col=gray(.6))
-  lines(seq(0,350,.05),dgamma(seq(0,350,.05),shape=fi_acc,scale=fi_mean/fi_acc),col="green")
-
-  
-  chronologyresol(folder)
-
-  par(mfrow=c(1,1))
 }
+  
+
+
+
 
 
 #' @export
@@ -137,7 +236,7 @@ chronologyresol<- function(folder){
   memory_shape2=(memory_shape*(1-memory_mean) )/memory_mean
   
   plot(-1,-1, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxA),xlab = "Depth (cm)",ylab="Age (years)" ,
-       xaxs="i",yaxs="i",main= gsub("\\..*","",Data))
+       xaxs="i",yaxs="i",main= Core.name)
   for (i2 in 1:(resolution-1)){
     for (i in 1:(resolution-1) ){
       rect(deptsSeq[i2], ageSeq[i], deptsSeq[i2+1], ageSeq[i+1], density = NA, border = NA,
@@ -148,7 +247,8 @@ chronologyresol<- function(folder){
   lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
   lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
   for (i in 1:length(Lead[,1])){
-    rug(Lead[i,1], lwd = Lead[i,5],col = "blue")
+    rug(Lead[i,1],col = rgb(0,0,1,.8))
+    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
   }
 }
   
@@ -182,7 +282,7 @@ chronologylinesP= function(folder,...){
   }
   Data=paste(Core.name,".csv",sep="")
   
-  par(mfrow=c(1,1))
+
   Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
   intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
   Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
@@ -195,7 +295,7 @@ chronologylinesP= function(folder,...){
 
 
   plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),
-       xlab = "Depth (cm)",ylab="Age (years)",...)
+       xlab = "Depth (cm)",ylab="Age (years)",main=Core.name,...)
   for (i in 1:(iterations-1)){
     lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
   }
@@ -203,7 +303,8 @@ chronologylinesP= function(folder,...){
   lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1)
   lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1)
   for (i in 1:length(Lead[,1])){
-    rug(Lead[i,1], lwd = Lead[i,5],col = "blue")
+    rug(Lead[i,1],col = rgb(0,0,1,.8))
+    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
   }
 
 
@@ -235,7 +336,6 @@ chronologylines= function(folder,...){
   }
   Data=paste(Core.name,".csv",sep="")
   
-  par(mfrow=c(1,1))
   Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
   intervals=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
   Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
@@ -248,7 +348,7 @@ chronologylines= function(folder,...){
 
 
 plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),
-     xlab = "Depth (cm)",ylab="Age (years)",main= gsub("\\..*","",Data),...)
+     xlab = "Depth (cm)",ylab="Age (years)",main=Core.name,...)
 for (i in 1:(iterations-1)){
   lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
 }
@@ -256,7 +356,8 @@ lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1,col="red")
 lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
 lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
 for (i in 1:length(Lead[,1])){
-  rug(Lead[i,1], lwd = Lead[i,5],col = "blue")
+  rug(Lead[i,1],col = rgb(0,0,1,.8))
+  rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
 }
 
 
@@ -298,7 +399,8 @@ slopes= function(folder,...){
     lines(Depths,as.numeric(c(Slopes[i,])),type="l",col=rgb(0,0,0,.01), lwd=2)
   }
   for (i in 1:length(Lead[,1])){
-    rug(Lead[i,1], lwd = Lead[i,5],col = "blue")
+    rug(Lead[i,1],col = rgb(0,0,1,.8))
+    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
   }
 }
 

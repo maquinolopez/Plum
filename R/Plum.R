@@ -120,11 +120,20 @@ python.call("plumMCMC",folder,Core.name,FALSE,    number_supported   ,    detect
    by ,memory_shape     ,memory_mean    ,acc_shape       ,acc_mean,fi_mean,fi_acc,As_mean,As_acc
    ,resolution,seeds,thin,burnin)
 
+Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
+
+if(length(Lead[1,])==5){
+  Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness")
+}else if(length(Lead[1,])==7){
+  Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness","226Ra","sd(226Ra)")
+}
+
+write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = Col.names,row.names = F)
 
 ##############
 Data=paste(Core.name,".csv",sep="")
 
-Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",")
+Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",",header = T)
 
 num_var=length(Output[0,])
 
@@ -150,15 +159,6 @@ par(mfrow=c(1,1))
 X11()
 fullchronology(folder = folder)
 
-Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
-
-if(length(Lead[1,])==5){
-Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness")
-}else if(length(Lead[1,])==7){
-Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness","226Ra","sd(226Ra)")
-}
-
-write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = Col.names,row.names = F)
 
 }
 

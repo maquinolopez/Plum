@@ -56,7 +56,7 @@ acc.pos.plot=function(folder){
   
 
   d <- density(as.numeric(unlist(Output[-1,-c(c(1:(Ran+2)),num_var)])))
-  plot(d,xlab="",main="Acc",ylab = "",xlim=c(0,80),xaxs="i",yaxs="i")
+  plot(d,xlab="yr/cm",main="Acc rate",ylab = "",xlim=c(0,80),xaxs="i",yaxs="i")
   polygon(d, col=gray(.6))
   lines(seq(0,100,.5),dgamma(seq(0,100,.5),shape=acc_shape,scale=acc_mean/acc_shape),col="green")
 }
@@ -96,7 +96,7 @@ memory.pos.plot=function(folder){
   memory_shape2=(memory_shape*(1-memory_mean) )/memory_mean
   
   d <- density(as.numeric(Output[-1,(Ran+2)]))
-  plot(d, xlab="",main="Memory",ylab = "",xlim=c(0,1),xaxs="i",yaxs="i")
+  plot(d, xlab="Memory",main="Memory",ylab = "",xlim=c(0,1),xaxs="i",yaxs="i")
   polygon(d, col=gray(.6))
   lines(seq(0,1,.01),dbeta(x = seq(0,1,.01),shape1 = memory_shape,shape2 = memory_shape2),col="green")
   
@@ -131,7 +131,7 @@ supply.pos.plot= function(folder){
   num_var=length(Output[0,])
 
   d <- density(as.numeric(Output[-1,1]))
-  plot(d,xlab="",main="Supply of 210Pb",ylab = "",xaxs="i",yaxs="i")
+  plot(d,xlab=expression(Bq/paste(m^2,yr)),main="Supply of 210Pb",ylab = "",xaxs="i",yaxs="i")
   polygon(d, col=gray(.6))
   lines(seq(0,350,.05),dgamma(seq(0,350,.05),shape=fi_acc,scale=fi_mean/fi_acc),col="green")
   
@@ -175,7 +175,7 @@ supported.pos.plot=function(folder){
 
   if(Ran==1){
     d <- density(as.numeric(Output[-1,2]))
-    plot(d,xlab="",main="Supported Act",ylab = "",xaxs="i",yaxs="i")
+    plot(d,xlab="210Pb concentration",main="Supported 210Pb",ylab = "",xaxs="i",yaxs="i")
     polygon(d, col=gray(.6))
     lines(seq(0,100,.05),dgamma(seq(0,100,.05),shape=As_acc,scale=As_mean/As_acc),col="green")
   }else {

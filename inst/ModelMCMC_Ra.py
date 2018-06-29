@@ -10,7 +10,7 @@ from numpy.random import seed
 	#import csv
 	##################### Read calibration curve
 
-def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin):
+def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin,bqkg):
 	seed(int(seeds))
 	plomo=corename+".csv"
 	fimean=fi_mean
@@ -23,7 +23,11 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	scale_As=ASmaean/shapeAS
 	Data=genfromtxt (dirt+plomo, delimiter = ',')
 	##################### Data definition 210Pb
-	density=Data[:,1]   * 10.
+	if bqkg:
+		Bqkg_cons=10.
+	else:
+		Bqkg_cons=500./3.#1000.
+	density=Data[:,1]   * Bqkg_cons
 	activity=Data[:,2]
 	sd_act=Data[:,3]
 	thic=Data[:,4]

@@ -248,7 +248,7 @@ chronologyresol<- function(folder){
   lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
   for (i in 1:length(Lead[,1])){
     rug(Lead[i,1],col = rgb(0,0,1,.8))
-    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
+    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], 10, col = rgb(0,0,1,.3),border=F)
   }
 }
   
@@ -304,7 +304,7 @@ chronologylinesP= function(folder,...){
   lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1)
   for (i in 1:length(Lead[,1])){
     rug(Lead[i,1],col = rgb(0,0,1,.8))
-    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
+    rect(Lead[i,1]-Lead[i,5], -1, Lead[i,1], 10, col = rgb(0,0,1,.3),border=F)
   }
 
 

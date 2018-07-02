@@ -12,8 +12,8 @@
 #' @export  
 runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=1.5,
                  number_supported=FALSE,detection_limit=.05,Bqkg=TRUE,
-                 memory_shape=4., memory_mean=.7,
-                 acc_shape=1.5,acc_mean=20,fi_mean=50,fi_acc=2,
+                 memory_shape=4., memory_mean=.4,
+                 acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
                  As_mean=20,As_acc=2,resolution=200,seeds=12345678,thin=20,burnin=5000){
   
   

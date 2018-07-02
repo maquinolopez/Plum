@@ -17,7 +17,7 @@ fullchronology= function(folder){
 
   supply.pos.plot(folder)
   
-  chronologylines(folder)
+  chronologyresol(folder)
 
   par(mfrow=c(1,1))
 }

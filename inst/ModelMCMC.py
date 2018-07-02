@@ -29,8 +29,10 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
     num_sup=len(Data[:,0])-num_sup
     if bqkg:
         Bqkg_cons=10.
+        
     else:
         Bqkg_cons=500./3.#1000.
+        det_lim=(500./3)*det_lim
     density=Data[:,1]   * Bqkg_cons
     activity=Data[:num_sup,2]
     sd_act=Data[:num_sup,3]

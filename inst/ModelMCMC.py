@@ -5,8 +5,9 @@ from numpy.random import seed
 
 
 
-def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin):
+def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin,bqkg):
     seed(int(seeds))
+    plomo=corename+".csv"
     fimean=fi_mean
     shapefi=fi_acc
     ASmaean=As_mean
@@ -26,7 +27,13 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
 		  sd_supp=Data[num_sup:,3]
 
     num_sup=len(Data[:,0])-num_sup
-    density=Data[:num_sup,1]   * 10.
+    if bqkg:
+        Bqkg_cons=10.
+        
+    else:
+        Bqkg_cons=500./3.#1000.
+        det_lim=(500./3)*det_lim
+    density=Data[:,1]   * Bqkg_cons
     activity=Data[:num_sup,2]
     sd_act=Data[:num_sup,3]
     thic=Data[:num_sup,4]
@@ -235,12 +242,12 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
     out 3-n -> dates
     out -1 -> Energy
     """
-    savetxt(dirt+'Results/Results_output.csv', Output,delimiter=',')
+    savetxt(dirt+'Results '+corename+'/Results_output.csv', Output,delimiter=',')
     estim=[]
     for i in range((iterations-1)):
         estim.append(times(breaks,Output[(i+1),:-1])  )
     estim=array(estim)
-    savetxt(dirt+'Results/dates.csv', estim  )
+    savetxt(dirt+'Results '+corename+'/dates.csv', estim  )
     intervals=[]
 
     for i in range(len(estim[1,])):
@@ -251,9 +258,9 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
         sort=sort[disc:disc1]
         intervals.append([breaks[i],sort[0],mean,sort[-1]])
 
-    savetxt(dirt+'Results/intervals.csv', intervals ,delimiter=',')
+    savetxt(dirt+'Results '+corename+'/intervals.csv', intervals ,delimiter=',')
     depths=array([append([0.0],breaks)])
-    savetxt(dirt+"Results/depths.csv", depths,delimiter=',')
+    savetxt(dirt+'Results '+corename+'/depths.csv', depths,delimiter=',')
 
 
     grafdepts=linspace(0,breaks[-1],resolution)
@@ -279,11 +286,11 @@ def plumMCMC(dirt,plomo,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,sh
                         porc.append(sum(array(y1>=grafage[posi])*array(y1<grafage[posi+1]) ))
                     y.append(porc/(max(porc)+0.0 ))
 
-    savetxt(dirt+"Results/Graphs.csv", array(y),delimiter=',')
+    savetxt(dirt+'Results '+corename+'/Graphs.csv', array(y),delimiter=',')
     slopes=[]
     for i in range(iterations-1):
         slopes.append(pendi(Output[(i+1),:-1])  )
-    savetxt(dirt+"Results/Slopes.csv", array(slopes),delimiter=',')
+    savetxt(dirt+'Results '+corename+'/Slopes.csv', array(slopes),delimiter=',')
 
 
 

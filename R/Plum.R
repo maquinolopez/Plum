@@ -9,32 +9,39 @@
 #' @param Conti is a vector showing which data was sample discontinuosly (1 would mean the data was sample discontinusly and 0 means the data was sampled continously).
 #' @param Bqkg is True when the data is in the form Bq/kg, if it False the data would be consider as ...
 
-#' @export
-runPlum=function(Data=TRUE,folder=TRUE,iterations=1.5e+3,by=1.5,number_supported=FALSE,
-                 detection_limit=.05,memory_shape=4., memory_mean=.7,
-                 acc_shape=1.5,acc_mean=20,fi_mean=50,fi_acc=2,
-                 As_mean=20,As_acc=2,resolution=200,seeds=12345678,thin=30,burnin=10000){
+#' @export  
+runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=1.5,
+                 number_supported=FALSE,detection_limit=.05,Bqkg=TRUE,
+                 memory_shape=4., memory_mean=.4,
+                 acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
+                 As_mean=20,As_acc=2,resolution=200,seeds=12345678,thin=20,burnin=5000){
+  
+  
   ##checks if data needs to be simulated
-  if (Data==TRUE & folder==TRUE){
-    folder=Data_sim() 
-    Data=folder[2]
-    folder=folder[1]
-  }else if(Data==TRUE & typeof(folder)=="character"){
-    folder=Data_sim(folder =folder) 
-    Data=folder[2]
-    folder=folder[1]
+  if (Core.name==TRUE & folder==TRUE){
+    folder=Data_sim()[1]
+    temp1=unlist(strsplit(folder,split = "/"))
+    Core.name=temp1[length(temp1)]
+  }else if(Core.name==TRUE & typeof(folder)=="character"){
+    temp1=unlist(strsplit(folder,split = "/"))
+    Core.name=temp1[length(temp1)]
+    #Core.name= "Simulation"
   }
-    
-  Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
-  write.table(Lead,paste(folder,Data,sep=""),sep=",",col.names = F,row.names = F)
-  Lead=read.table(paste(folder,Data,sep=""),sep=",")
+  remove(temp1)
+  # if(Core.name==TRUE){
+  #   temp1=unlist(strsplit(folder,split = "/"))
+  #   Core.name=temp1[length(temp1)]
+  # }  
+  folder=paste(normalizePath(folder),"/",sep="")
+  
+
+  Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",",header = T)
+  write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = F,row.names = F)
+  Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
 
   
 
 
-
-
-folder=paste(normalizePath(folder),"/",sep="")
 
 
 print("working folder is")
@@ -80,6 +87,19 @@ if(number_supported==FALSE){
     }
 }else{usemod=1}
 
+
+
+settings.file=c(Core.name,iterations, by, number_supported, detection_limit, memory_shape,memory_mean,
+                acc_shape,acc_mean,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thin,burnin,usemod)
+settings.file=matrix(settings.file,ncol=1)
+write.table(x = settings.file,file = paste(folder,"settings.txt",sep=""),sep = ",",col.names = F,row.names = F)  
+
+
+
+
+
+
+
 modirec=path.package("Plum", quiet = T)
 
 
@@ -93,125 +113,51 @@ if (usemod==1){
 
 python.load(MCMC)
 #python.load(twalk)
-dir.create(paste(folder,"Results",sep = ""))
+dir.create(paste(folder,"Results ",Core.name,sep = ""))
 
-python.call("plumMCMC",folder,Data,FALSE,    number_supported   ,    detection_limit   ,  iterations,
+python.call("plumMCMC",folder,Core.name,FALSE,    number_supported   ,    detection_limit   ,  iterations,
    by ,memory_shape     ,memory_mean    ,acc_shape       ,acc_mean,fi_mean,fi_acc,As_mean,As_acc
-   ,resolution,seeds,thin,burnin)
+   ,resolution,seeds,thin,burnin,Bqkg)
 
+Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
+
+if(length(Lead[1,])==5){
+  Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness")
+}else if(length(Lead[1,])==7){
+  Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness","226Ra","sd(226Ra)")
+}
+
+write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = Col.names,row.names = F)
 
 ##############
+Data=paste(Core.name,".csv",sep="")
 
+Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",",header = T)
 
-Ages=read.table(paste(folder,"Results/dates.csv",sep=""),sep=" ")
-intervals=read.table(paste(folder,"Results/intervals.csv",sep=""),sep=",")
-Depths=as.numeric(read.table(paste(folder,"Results/depths.csv",sep=""),sep=",") )
-Output=read.table(paste(folder,"Results/Results_output.csv",sep=""),sep=",")
-Plotval=read.table(paste(folder,"Results/Graphs.csv",sep=""),sep=",")
-Slopes=read.table(paste(folder,"Results/Slopes.csv",sep=""),sep=",")
 num_var=length(Output[0,])
 
-maxA=max(Ages[,length(Ages[1,])])+.10
-ageSeq=seq(from=0,to=maxA,maxA/resolution)
-deptsSeq=seq(from=0,to=Depths[length(Depths)],Depths[length(Depths)]/resolution)
-deptsSeq=deptsSeq
-diffSep=(deptsSeq[2]-deptsSeq[1])/2
-TotSeq=length(Ages[,1])
 X11()
 plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
 
 
-pdf(paste(folder,'Chronologylines.pdf',sep=""))
-plot(-1,-1, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxA),xlab = "Depth (cm)",ylab="Age (years)" )
-
-for (i2 in 1:(resolution-1)){
-    for (i in 1:(resolution-1) ){
-      rect(deptsSeq[i2], ageSeq[i], deptsSeq[i2+1], ageSeq[i+1], density = NA, border = NA,
-      col = gray((1-Plotval[i2,i])))
-    }
-}
-lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1)
-lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1)
-lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1)
+pdf(paste(folder,paste('Chronologylines ',Core.name,'.pdf',sep=""),sep=""))
+chronologylines(folder = folder)
 dev.off()
 
 
-# pdf(paste(folder,'Slopes.pdf',sep=""))
-# maxS=max(Slopes)+.10
-# plot(-10,-10, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxS),xlab = "Depth (cm)",ylab="Slopes (Accumulations)" )
-# for (i in 1:(iterations-1)){
-#   lines(Depths,as.numeric(c(0,Slopes[i,])),type="l",col=rgb(0,0,0,.01), lwd=2)
-# }
-# dev.off()
-# pdf(paste(folder,'Chronology.pdf',sep=""))
-# plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),xlab = "Depth (cm)",ylab="Age (years)")
-# for (i in 1:(iterations-1)){
-#   lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
-# }
-# lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1)
-# lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1)
-# lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1)
-# dev.off()
-
-
-# 
-# 
-# pdf(paste(folder,'Fi.pdf',sep=""))
-# plot(as.numeric(Output[-1,1]),type="l",main="fi",xlab="",ylab="")
-# dev.off()
-# pdf(paste(folder,'Supported.pdf',sep=""))
-# plot(as.numeric(Output[-1,2]),type="l",main="Supported Act",xlab="",ylab="")
-# dev.off()
-pdf(paste(folder,'Energy.pdf',sep=""))
+pdf(paste(folder,paste('Energy ',Core.name,'.pdf',sep=""),sep=""))
 plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
 dev.off()
-# pdf(paste(folder,'Memory.pdf',sep=""))
-# plot(as.numeric(Output[-1,3]),type="l",main="Memory",xlab="",ylab="")
-# dev.off()
-# 
-# pdf(paste(folder,'Fi hist.pdf',sep=""))
-# hist(as.numeric(Output[-1,1]),breaks=50,probability=T,main="fi",xlab="")
-# dev.off()
-# pdf(paste(folder,'Supported hist.pdf',sep=""))
-# hist(as.numeric(Output[-1,2]),breaks=50,probability=T,main="Supported Act",xlab="")
-# dev.off()
-# pdf(paste(folder,'Energy hist.pdf',sep=""))
-# hist(as.numeric(Output[-1,num_var]),breaks=50,main="Energy",xlab="")
-# dev.off()
-# pdf(paste(folder,'Memory hist.pdf',sep=""))
-# hist(as.numeric(Output[-1,3]),breaks=50,main="Memory",probability=T,xlim=c(0,1),xlab="")
-# lines(seq(0,100,.01),dbeta(seq(0,100,.01),4,1.5),col="red")
-# dev.off()
-# 
-# 
-# pdf(paste(folder,'acc hist.pdf',sep=""))
-# hist(as.numeric(unlist(Output[-1,-c(1,2,3,num_var)])),breaks=50,main="Acc",probability=T,xlab="")
-# lines(seq(0,100,.5),dgamma(seq(0,100,.5),1.5,scale=20/1.5),col="red")
-# dev.off()
 
-
-
-
-pdf(paste(folder,'Chronology.pdf',sep=""))
-fullchronology(folder = folder,Data = Data,supp_type = usemod,resolution = resolution,
-               memory_shape = memory_shape,memory_mean =  memory_mean,
-               acc_shape = acc_shape,acc_mean = acc_mean,
-               fi_mean = fi_mean,fi_acc = fi_acc,
-               As_mean = As_mean,As_acc = As_acc)
+pdf(paste(folder,paste('Chronology ',Core.name,'.pdf',sep=""),sep=""))
+fullchronology(folder = folder)
 dev.off()
 
 
 par(mfrow=c(1,1))
 X11()
-fullchronology(folder = folder,Data = Data,supp_type = usemod,resolution = resolution,
-               memory_shape = memory_shape,memory_mean =  memory_mean,
-               acc_shape = acc_shape,acc_mean = acc_mean,
-               fi_mean = fi_mean,fi_acc = fi_acc,
-               As_mean = As_mean,As_acc = As_acc)
+fullchronology(folder = folder)
 
-Lead=read.table(paste(folder,Data,sep=""),sep=",",header = T)
-Col.names=c("Depth (cm)","Density g/cm^3","210Pb (Bq/kg)","sd(210Pb)","Thickness (cm)","226Ra (Bq/kg)","sd(226Ra)")
-write.table(Lead,paste(folder,Data,sep=""),sep=",",col.names = Col.names,row.names = F)
 
 }
 
@@ -264,4 +210,5 @@ check.qui.Ra = function(rawdat){
     return(1)
   }
 }
+
 

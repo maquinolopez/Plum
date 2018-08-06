@@ -79,7 +79,7 @@ if(number_supported==FALSE){
     segments(Lead$V1, Lead$V6-Lead$V7, x1 = Lead$V1, y1 = Lead$V6+Lead$V7)
     cat("Plum can assume to have a constant supported 210Pb and use the 226Ra data to infer this one value\n")
     cat("Plum can also assume individual supported 210Pb per data point.\n
-        It is important to consider that this will greatly increses the computing time and it should only be use when clear parters are observed in the 226Ra data.\n")
+        It is important to consider that this will greatly increases the computing time and it should only be use when clear patters are observed in the 226Ra data.\n")
     cat("\n If you want to use the constant supported 210Pb press 1, if you want to use the individual 210Pb press 2\n")
     usemod=0
     while(!(usemod==1||usemod==2)){

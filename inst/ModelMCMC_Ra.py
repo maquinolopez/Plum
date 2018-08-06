@@ -75,7 +75,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 		return tmp3
 
 	def last_t(fi):
-		return(1./lam)*log(fi/det_lim)
+		return(1./lam)*log(fi/(lam*det_lim))
 
 	def ln_like_data(param):
 		Asup=param[1:Ran+1]*density

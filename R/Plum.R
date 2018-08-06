@@ -10,8 +10,8 @@
 #' @param Bqkg is True when the data is in the form Bq/kg, if it False the data would be consider as ...
 
 #' @export  
-runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=1.5,
-                 number_supported=FALSE,detection_limit=.05,Bqkg=TRUE,
+runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=TRUE,
+                 number_supported=FALSE,detection_limit=.1,Bqkg=TRUE,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
                  As_mean=20,As_acc=2,resolution=200,seeds=12345678,thin=20,burnin=5000){
@@ -38,7 +38,11 @@ runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=1.5,
   Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",",header = T)
   write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = F,row.names = F)
   Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
-
+  
+  if (by==TRUE){
+  
+   by=(Lead[length(Lead[,1]),1]-Lead[1,1])/length(Lead[,1])#25
+  }
   
 
 
@@ -74,8 +78,8 @@ if(number_supported==FALSE){
     cat("You have 226Ra data. \n")
     plot(Lead$V1,Lead$V6,pch=16,ylim=c(min(Lead$V6-Lead$V7),max(Lead$V6+Lead$V7)), ylab="Concentration of 226Ra", xlab="Depth (cm)")
     segments(Lead$V1, Lead$V6-Lead$V7, x1 = Lead$V1, y1 = Lead$V6+Lead$V7)
-    cat("Plum can assum to have a constant supported 210Pb and use the 226Ra data to infer this one value\n")
-    cat("Plum can also assum individual supporeted 210Pb per data point.\n
+    cat("Plum can assume to have a constant supported 210Pb and use the 226Ra data to infer this one value\n")
+    cat("Plum can also assume individual supported 210Pb per data point.\n
         It is important to consider that this will greatly increses the computing time and it should only be use when clear parters are observed in the 226Ra data.\n")
     cat("\n If you want to use the constant supported 210Pb press 1, if you want to use the individual 210Pb press 2\n")
     usemod=0

@@ -40,8 +40,7 @@ runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=TRUE,
   Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
   
   if (by==TRUE){
-  
-   by=(Lead[length(Lead[,1]),1]-Lead[1,1])/length(Lead[,1])#25
+   by=(Lead[length(Lead[,1]),1])/20#25
   }
   
 

@@ -1,6 +1,6 @@
 #' @export
 fullchronology= function(folder){
-
+  folder=paste(normalizePath(folder),"/",sep="")
   layout(matrix(c(1,1,2,2,3,3,4,4,
                   1,1,2,2,3,3,4,4,
                   5,5,5,5,5,5,5,5,
@@ -63,6 +63,7 @@ acc.pos.plot=function(folder){
 
 #' @export
 memory.pos.plot=function(folder){
+  folder=paste(normalizePath(folder),"/",sep="")
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -104,6 +105,7 @@ memory.pos.plot=function(folder){
 
 #' @export
 supply.pos.plot= function(folder){
+  folder=paste(normalizePath(folder),"/",sep="")
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -140,6 +142,7 @@ supply.pos.plot= function(folder){
 
 #' @export
 supported.pos.plot=function(folder){
+  folder=paste(normalizePath(folder),"/",sep="")
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -197,6 +200,7 @@ supported.pos.plot=function(folder){
 
 #' @export
 chronologyresol<- function(folder){
+  folder=paste(normalizePath(folder),"/",sep="")
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -259,6 +263,7 @@ chronologyresol<- function(folder){
 
 #' @export
 chronologylinesP= function(folder,...){
+  folder=paste(normalizePath(folder),"/",sep="")
   
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
@@ -313,6 +318,7 @@ chronologylinesP= function(folder,...){
 
 #' @export
 chronologylines= function(folder,...){
+  folder=paste(normalizePath(folder),"/",sep="")
   
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
@@ -367,7 +373,7 @@ for (i in 1:length(Lead[,1])){
 
 #' @export
 slopes= function(folder,...){
-  
+  folder=paste(normalizePath(folder),"/",sep="")
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -406,6 +412,7 @@ slopes= function(folder,...){
 
 #' @export
 ageof=function(folder,x,interval=.95){
+  folder=paste(normalizePath(folder),"/",sep="")
   
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)

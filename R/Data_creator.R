@@ -2,7 +2,7 @@
 
 timefunction<- function (x)(  (x^2)/3 + x/2)
 #'export
-Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE,crea.file=T,folder=T){
+Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE, error_supp=TRUE,crea.file=T,folder=T){
   dptS=depths[length(depths)]
   lambda=0.03114
   if (typeof(supp)=="character"){
@@ -54,13 +54,16 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
 
     k=k+1
   }
+  if(error_supp==TRUE){
+    suppsd=3
+  }else{suppsd=error_supp
+  }
 
   if(errors==TRUE){
     uncer=seq(10,1,length.out = length(sample1))
     sample1un=c()
     unc=c()
-    suppo=abs(rnorm(length(supported),supported,rep(3,length(supported))) )
-    unc.cons=3
+    suppo=abs(rnorm(length(supported),supported,rep(suppsd,length(supported))) )
     k=1
     for (i in sample1){
       sample1un=c(sample1un,i+rnorm(1,0,uncer[k]))
@@ -70,8 +73,7 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
     if(any(typeof(errors)=="double",typeof(errors)=="integer") ){
       if (length(errors)==1){
         sample1un=c()
-        suppo=abs(rnorm(length(supported),supported,rep(3,length(supported))) )
-        unc.cons=3
+        suppo=abs(rnorm(length(supported),supported,rep(suppsd,length(supported))) )
         k=1
         uncer=rep(errors,length(depths))
         for (i in sample1){
@@ -80,8 +82,7 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
         }
       } else{if(length(errors)==length(depths)){
         sample1un=c()
-        suppo=abs(rnorm(length(supported),supported,rep(3,length(supported))) )
-        unc.cons=3
+        suppo=abs(rnorm(length(supported),supported,rep(suppsd,length(supported))) )
         uncer=errors
         k=1
         for (i in sample1){
@@ -95,18 +96,19 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
     }else{
       sample1un=sample1
       uncer=rep(0,length(depths))
-      suppo=abs(rnorm(length(supported),supported,rep(3,length(supported))) )
+
+      suppo=abs(rnorm(length(supported),supported,rep(suppsd,length(supported))) )
     }
   }
 
 
-  plot(depths,sample1un,pch=16,cex=.6,main="Simulated data",xlab="Depth (cm)",ylab="Bq/kg",ylim=c(0,(max(sample1un)+max(uncer))) )
+  plot(depths,sample1un,pch=16,cex=.6,main="Simulated data",xlab="Depth (cm)",ylab="Bq/kg",ylim=c(min(suppo)-suppsd,(max(sample1un)+max(uncer))) )
   segments(depths, sample1un+uncer, x1 = depths, y1 = sample1un-uncer)
   points(depths,suppo,pch=16,col="red",cex=.6)
-  segments(depths, suppo+3, x1 = depths, y1 = suppo-3,col="red")
+  segments(depths, suppo+suppsd, x1 = depths, y1 = suppo-suppsd,col="red")
 
 
-  sim_data=matrix(c(depths,(density/10),sample1un,uncer,rep(thick,length(depths)),suppo,rep(3,length(suppo)) ),nrow=length(depths),byrow = FALSE)
+  sim_data=matrix(c(depths,(density/10),sample1un,uncer,rep(thick,length(depths)),suppo,rep(suppsd,length(suppo)) ),nrow=length(depths),byrow = FALSE)
   
   
   if(crea.file==TRUE){
@@ -128,7 +130,7 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
     write.table(sim_data,file = paste(folder,"/",datname,sep=""),sep=",",col.names=Col.names, row.names=F)
   }
   print("Simulated data is located at" )
-  print(folder)
+  #print(folder)
   return(c(folder,datname))
   
 }

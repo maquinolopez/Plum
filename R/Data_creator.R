@@ -2,7 +2,7 @@
 
 timefunction<- function (x)(  (x^2)/3 + x/2)
 #'export
-Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE, error_supp=TRUE,crea.file=T,folder=T){
+Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE, error_supp=TRUE,crea.file=T,folder=T,epsi=.03,y.scat=1.5,sigmax=1.){
   dptS=depths[length(depths)]
   lambda=0.03114
   if (typeof(supp)=="character"){
@@ -55,20 +55,22 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
     k=k+1
   }
   if(error_supp==TRUE){
-    suppsd=3
+    suppsd=supp*epsi*1.5 
   }else{suppsd=error_supp
   }
 
   if(errors==TRUE){
-    uncer=seq(10,1,length.out = length(sample1))
     sample1un=c()
     unc=c()
     suppo=abs(rnorm(length(supported),supported,rep(suppsd,length(supported))) )
     k=1
     for (i in sample1){
-      sample1un=c(sample1un,i+rnorm(1,0,uncer[k]))
+      sample1un=c(sample1un,i+rnorm(1,0,max(sigmax,epsi*y.scat*i)))
       k=k+1
     }
+    uncer=epsi*y.scat*sample1un
+    uncmin=which(uncer<sigmax)
+    uncer[uncmin]=1
   }else{
     if(any(typeof(errors)=="double",typeof(errors)=="integer") ){
       if (length(errors)==1){
@@ -101,7 +103,7 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
     }
   }
 
-
+  
   plot(depths,sample1un,pch=16,cex=.6,main="Simulated data",xlab="Depth (cm)",ylab="Bq/kg",ylim=c(min(suppo)-suppsd,(max(sample1un)+max(uncer))) )
   segments(depths, sample1un+uncer, x1 = depths, y1 = sample1un-uncer)
   points(depths,suppo,pch=16,col="red",cex=.6)
@@ -126,7 +128,14 @@ Data_sim=function(tfuntion=timefunction, depths=1:30,supp=15,thick=1,Fi=100,rho=
     }else {ranind=floor(runif(1,10,99)) }
     
     Col.names=c("Depth (cm)","Density g/cm^3","210Pb (Bq/kg)","sd(210Pb)","Thickness (cm)","226Ra (Bq/kg)","sd(226Ra)")
+    
+    if(Core.name==TRUE){
     datname=paste("Simulation-",ranind,".csv",sep="")
+    }else{
+      datname=paste(Core.name,".csv",sep="")
+    }
+    
+    
     write.table(sim_data,file = paste(folder,"/",datname,sep=""),sep=",",col.names=Col.names, row.names=F)
   }
   print("Simulated data is located at" )

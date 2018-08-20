@@ -12,7 +12,7 @@ from numpy.random import seed
 
 def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin,bqkg):
 	seed(int(seeds))
-	plomo=corename+".csv"
+	plomo="/"+corename+".csv"
 	fimean=fi_mean
 	shapefi=fi_acc
 	ASmaean=As_mean
@@ -21,7 +21,8 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	scale_acc=mean_acc/shape_acc
 	scale_fi=fimean/shapefi
 	scale_As=ASmaean/shapeAS
-	Data=genfromtxt (dirt+plomo, delimiter = ',')
+	Data=genfromtxt (dirt+'Results '+corename+plomo, delimiter = ',')
+	print(Data)
 	##################### Data definition 210Pb
 	if bqkg:
 		Bqkg_cons=10.

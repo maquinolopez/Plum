@@ -7,7 +7,7 @@ from numpy.random import seed
 
 def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin,bqkg):
     seed(int(seeds))
-    plomo=corename+".csv"
+    plomo="/"+corename+".csv"
     fimean=fi_mean
     shapefi=fi_acc
     ASmaean=As_mean
@@ -16,7 +16,10 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
     scale_acc=mean_acc/shape_acc
     scale_fi=fimean/shapefi
     scale_As=ASmaean/shapeAS
-    Data=genfromtxt (dirt+plomo, delimiter = ',')
+    Data=genfromtxt (dirt+'Results '+corename+plomo, delimiter = ',')
+    print(Data)
+
+    
 
     ##################### Data definition 210Pb
     if num_sup == 0:
@@ -29,11 +32,11 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
     num_sup=len(Data[:,0])-num_sup
     if bqkg:
         Bqkg_cons=10.
-        
     else:
         Bqkg_cons=500./3.#1000.
-        det_lim=(500./3)*det_lim
-    density=Data[:,1]   * Bqkg_cons
+        det_lim=(500./3.)*det_lim
+
+    density=Data[:num_sup,1]*Bqkg_cons
     activity=Data[:num_sup,2]
     sd_act=Data[:num_sup,3]
     thic=Data[:num_sup,4]

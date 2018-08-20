@@ -33,11 +33,11 @@ runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=TRUE,
   #   Core.name=temp1[length(temp1)]
   # }  
   folder=paste(normalizePath(folder),"/",sep="")
-  
+  dir.create(paste(folder,"Results ",Core.name,sep = ""))
 
   Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",",header = T)
-  write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = F,row.names = F)
-  Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
+  write.table(Lead,paste(folder,"Results ",Core.name,"/",Core.name,".csv",sep=""),sep=",",col.names = F,row.names = F)
+  Lead=read.table(paste(folder,"Results ",Core.name,"/",Core.name,".csv",sep=""),sep=",")
   
   if (by==TRUE){
    by=(Lead[length(Lead[,1]),1])/20#25
@@ -116,7 +116,7 @@ if (usemod==1){
 
 python.load(MCMC)
 #python.load(twalk)
-dir.create(paste(folder,"Results ",Core.name,sep = ""))
+
 
 python.call("plumMCMC",folder,Core.name,FALSE,    number_supported   ,    detection_limit   ,  iterations,
    by ,memory_shape     ,memory_mean    ,acc_shape       ,acc_mean,fi_mean,fi_acc,As_mean,As_acc
@@ -130,7 +130,7 @@ if(length(Lead[1,])==5){
   Col.names=c("Depth","Density","210Pb","sd(210Pb)","Thickness","226Ra","sd(226Ra)")
 }
 
-write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = Col.names,row.names = F)
+#write.table(Lead,paste(folder,Core.name,".csv",sep=""),sep=",",col.names = Col.names,row.names = F)
 
 ##############
 Data=paste(Core.name,".csv",sep="")

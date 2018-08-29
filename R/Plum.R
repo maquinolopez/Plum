@@ -26,8 +26,10 @@ runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=TRUE,
     temp1=unlist(strsplit(folder,split = "/"))
     Core.name=temp1[length(temp1)]
     #Core.name= "Simulation"
+  }else if (folder==TRUE & typeof(Core.name)=="character"){
+    folder=paste("~/Plum/",Core.name,sep="")
   }
-  remove(temp1)
+  #remove(temp1)
   # if(Core.name==TRUE){
   #   temp1=unlist(strsplit(folder,split = "/"))
   #   Core.name=temp1[length(temp1)]

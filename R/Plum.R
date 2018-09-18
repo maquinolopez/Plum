@@ -10,11 +10,11 @@
 #' @param Bqkg is True when the data is in the form Bq/kg, if it False the data would be consider as ...
 
 #' @export  
-runPlum=function(folder=TRUE,Core.name=TRUE,iterations=1e+3,by=TRUE,
+runPlum=function(folder=TRUE,Core.name=TRUE,iterations=2e+3,by=TRUE,
                  number_supported=FALSE,detection_limit=.1,Bqkg=TRUE,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
-                 As_mean=20,As_acc=2,resolution=200,seeds=12345678,thin=20,burnin=5000){
+                 As_mean=10,As_acc=2,resolution=200,seeds=12345678,thin=30,burnin=7000){
   
   
   ##checks if data needs to be simulated

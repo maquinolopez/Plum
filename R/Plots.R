@@ -396,8 +396,8 @@ slopes= function(folder,...){
   }
   Data=paste(Core.name,".csv",sep="")
   
-  Depths=as.numeric(read.table(paste(folder,"Results",Core.name,"/depths.csv",sep=""),sep=",") )
-  Slopes=read.table(paste(folder,"Results",Core.name,"/Slopes.csv",sep=""),sep=",")
+  Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+  Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
   iterations=length(Slopes[,1])
   maxS=max(Slopes)+.10
   plot(-10,-10, xlim=c(Depths[length(Depths)]),ylim = c(0, maxS),xlab = "Depth (cm)",ylab="Slopes (Accumulations)" )
@@ -437,9 +437,9 @@ ageof=function(folder,x,interval=.95){
   if(x!=0){
     Data=paste(Core.name,".csv",sep="")
     
-    Ages=read.table(paste(folder,"Results",Core.name,"/dates.csv",sep=""),sep=" ")
-    Depths=as.numeric(read.table(paste(folder,"Results",Core.name,"/depths.csv",sep=""),sep=",") )
-    Slopes=read.table(paste(folder,"Results",Core.name,"/Slopes.csv",sep=""),sep=",")
+    Ages=read.table(paste(folder,"Results ",Core.name,"/dates.csv",sep=""),sep=" ")
+    Depths=as.numeric(read.table(paste(folder,"Results ",Core.name,"/depths.csv",sep=""),sep=",") )
+    Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
     
     depfix=which(Depths<x)
     depfix=depfix[length(depfix)]

@@ -10,7 +10,7 @@ from numpy.random import seed
 	#import csv
 	##################### Read calibration curve
 
-def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin,bqkg):
+def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate):
 	seed(int(seeds))
 	plomo="/"+corename+".csv"
 	fimean=fi_mean
@@ -43,6 +43,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 
 	lam=0.03114
 
+      
 
 
 	dep_time_data=append(depth-thic,depth)
@@ -148,6 +149,16 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 		for ms in range(m):
 		   prior= prior -  (  (shape_acc-1.)*log(param[ms+2+Ran])-(param[ms+2+Ran]/scale_acc) )
 		return prior
+		
+	if Cs==True:
+		def Cslike(param):		
+			return 0.
+	else:	
+		def Cslike(param):
+			tcs=times([Cs],param)
+			Tau=.5*(.2**-2.)
+			return Tau*(((Sdate-tcs)-1968)**2.)
+	
 
 
 	if T_mod:
@@ -156,7 +167,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 		log_data=ln_like_data
 
 	def obj(param):
-		objval= ln_like_supp(param) + ln_prior_supp(param) + log_data(param)
+		objval= ln_like_supp(param) + ln_prior_supp(param) + log_data(param)+Cslike(param)
 		return objval
 
 

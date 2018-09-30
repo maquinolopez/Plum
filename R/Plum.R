@@ -10,7 +10,7 @@
 #' @param Bqkg is True when the data is in the form Bq/kg, if it False the data would be consider as ...
 
 #' @export  
-runPlum=function(folder=TRUE,Core.name=TRUE,iterations=2e+3,by=TRUE,
+runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
                  number_supported=FALSE,detection_limit=.1,Bqkg=TRUE,
                  Cs=TRUE,Sampledate=2017,
                  memory_shape=4., memory_mean=.4,

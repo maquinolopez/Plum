@@ -12,7 +12,7 @@
 #' @export  
 runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
                  number_supported=FALSE,detection_limit=.1,Bqkg=TRUE,
-                 Cs=TRUE,Sampledate=2017,
+                 Cs=TRUE,Sampledate=2017,Cs_date=1968,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
                  As_mean=10,As_acc=2,resolution=200,seeds=12345678,thin=30,burnin=7000){
@@ -123,7 +123,7 @@ python.load(MCMC)
 
 python.call("plumMCMC",folder,Core.name,FALSE,    number_supported   ,    detection_limit   ,  iterations,
    by ,memory_shape     ,memory_mean    ,acc_shape       ,acc_mean,fi_mean,fi_acc,As_mean,As_acc
-   ,resolution,seeds,thin,burnin,Bqkg,Cs,Sampledate)
+   ,resolution,seeds,thin,burnin,Bqkg,Cs,Sampledate,Cs_date)
 
 Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
 

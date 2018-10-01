@@ -10,7 +10,7 @@ from numpy.random import seed
 	#import csv
 	##################### Read calibration curve
 
-def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate):
+def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate,CSTdate):
 	seed(int(seeds))
 	plomo="/"+corename+".csv"
 	fimean=fi_mean
@@ -157,7 +157,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 		def Cslike(param):
 			tcs=times([Cs],param)
 			Tau=.5*(.3**-2.)
-			return Tau*(((Sdate-tcs)-1968)**2.)
+			return Tau*(((Sdate-tcs)-CSTdate)**2.)
 	
 
 

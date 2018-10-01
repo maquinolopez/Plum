@@ -1,214 +1,224 @@
-    #####################  Librerias
+	#####################  Librerias
 from numpy import isnan,savetxt,genfromtxt, array, log, unique, exp, append,concatenate,zeros, repeat,linspace
 from scipy.stats import uniform as unif
 from numpy.random import seed
 
 
 
-def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate):
-    seed(int(seeds))
-    plomo="/"+corename+".csv"
-    fimean=fi_mean
-    shapefi=fi_acc
-    ASmaean=As_mean
-    shapeAS=As_acc
-    shape2_m= (shape1_m*(1-mean_m) )/mean_m
-    scale_acc=mean_acc/shape_acc
-    scale_fi=fimean/shapefi
-    scale_As=ASmaean/shapeAS
-    Data=genfromtxt (dirt+'Results '+corename+plomo, delimiter = ',')
-    print(Data)
+def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate,CSTdate):
+	seed(int(seeds))
+	plomo="/"+corename+".csv"
+	fimean=fi_mean
+	shapefi=fi_acc
+	ASmaean=As_mean
+	shapeAS=As_acc
+	shape2_m= (shape1_m*(1-mean_m) )/mean_m
+	scale_acc=mean_acc/shape_acc
+	scale_fi=fimean/shapefi
+	scale_As=ASmaean/shapeAS
+	Data=genfromtxt (dirt+'Results '+corename+plomo, delimiter = ',')
+	print(Data)
 
-    
+	
 
-    ##################### Data definition 210Pb
-    if num_sup == 0:
+	##################### Data definition 210Pb
+	if num_sup == 0:
 		  supp=Data[num_sup:,5]
 		  sd_supp=Data[num_sup:,6]
-    if num_sup != 0:
+	if num_sup != 0:
 		  supp=Data[num_sup:,2]
 		  sd_supp=Data[num_sup:,3]
 
-    num_sup=len(Data[:,0])-num_sup
-    if bqkg:
-        Bqkg_cons=10.
-    else:
-        Bqkg_cons=500./3.#1000.
-        det_lim=(500./3.)*det_lim
+	num_sup=len(Data[:,0])-num_sup
+	if bqkg:
+		Bqkg_cons=10.
+	else:
+		Bqkg_cons=500./3.#1000.
+		det_lim=(500./3.)*det_lim
 
-    density=Data[:num_sup,1]*Bqkg_cons
-    activity=Data[:num_sup,2]
-    sd_act=Data[:num_sup,3]
-    thic=Data[:num_sup,4]
-    depth=Data[:num_sup,0]
-    supp=Data[num_sup:,2]
-    sd_supp=Data[num_sup:,3]
+	density=Data[:num_sup,1]*Bqkg_cons
+	activity=Data[:num_sup,2]
+	sd_act=Data[:num_sup,3]
+	thic=Data[:num_sup,4]
+	depth=Data[:num_sup,0]
+	supp=Data[num_sup:,2]
+	sd_supp=Data[num_sup:,3]
 
-    activity=activity*density
-    sd_act=sd_act*density
+	activity=activity*density
+	sd_act=sd_act*density
 
-    lam=0.03114
+	lam=0.03114
 
-    dep_time_data=append(depth-thic,depth)
-    dep_time_data=list(set(dep_time_data))
-    X1, X0= [], []
-    for i1 in range(len(depth)):
-        for k1 in range(len(dep_time_data)):
-            if depth[i1]== dep_time_data[k1]:
-                X1=append(X1,int(k1))
-            if (depth-thic)[i1]== dep_time_data[k1]:
-                X0=append(X0,int(k1))
+	dep_time_data=append(depth-thic,depth)
+	dep_time_data=list(set(dep_time_data))
+	X1, X0= [], []
+	for i1 in range(len(depth)):
+		for k1 in range(len(dep_time_data)):
+			if depth[i1]== dep_time_data[k1]:
+				X1=append(X1,int(k1))
+			if (depth-thic)[i1]== dep_time_data[k1]:
+				X0=append(X0,int(k1))
 
-    m=1
-    breaks=array(m*by)
-    while m*by< depth[-1]:
-        m += 1
-        breaks=append(breaks,m*by)
-
-
-    #################### Functions
-
-    def support(param):
-        tmp3=True
-        for i in param:
-            if i <= 0.:
-                tmp3=False
-        if param[2]>=1.:
-            tmp3=False
-        if times([depth[-1]],param)[-1]>last_t(param[0]):
-            tmp3=False
-        return tmp3
-
-    def last_t(fi):
-        return(1./lam)*log(fi/(lam*det_lim))
-
-    def ln_like_data(param):
-        Asup=param[1]*density
-        loglike = 0.
-        tmp2=param[0]/lam
-        ts=times(dep_time_data,param)
-        for i in range(len(activity)):
-            A_i= Asup[i] + tmp2 *(exp(-lam*ts[int(X0[i])] ) - exp(-lam*ts[int(X1[i])]) )
-            Tau=.5*(sd_act[i]**(-2.))
-            loglike = loglike + Tau*((A_i-activity[i])**2.)
-        return loglike
-
-    def ln_like_T(param):
-        Asup=param[1]*density
-        loglike = 0.
-        tmp2=param[0]/lam
-        ts=times(dep_time_data,param)
-        for i in range(len(activity)):
-            A_i= Asup[i] + tmp2 *(exp(-lam*ts[int(X0[i])] ) - exp(-lam*ts[int(X1[i])]) )
-            Tau=.5*(sd_act[i]**(-2.))
-            loglike = loglike + 3.5*log(4. + Tau*((A_i-activity[i])**2.) )
-        return loglike
+	m=1
+	breaks=array(m*by)
+	while m*by< depth[-1]:
+		m += 1
+		breaks=append(breaks,m*by)
 
 
-    def ln_like_supp(param):
-        logsupp=0.
-        for i in range(len(supp)):
-            Tau=.5*(sd_supp[i]**-2.)
-            logsupp = logsupp + Tau*((param[1]-supp[i])**2.)
-        return logsupp
+	#################### Functions
 
-    def times(x,param):
-        w=param[2]
-        a=param[3:]
-        t1=m-1
-        ms1=array([a[m-1]])
-        while t1 >0 :
-           ms1= append(ms1, w*ms1[-1]+(1-w)*a[t1-1])
-           t1 -= 1
-        ms=ms1[::-1]
-        ages=array([])
-        y_last=append([0],array([sum(ms[:i+1]*by) for i in range(len(ms))] ) )
-        for i in range(len(x)):
-           k1=0
-           while  breaks[k1]< x[i]:
-               k1 += 1
-           ages=append(ages,y_last[k1]+(ms[k1]*(by-(breaks[k1]-x[i]))))
-        return ages
+	def support(param):
+		tmp3=True
+		for i in param:
+			if i <= 0.:
+				tmp3=False
+		if param[2]>=1.:
+			tmp3=False
+		if times([depth[-1]],param)[-1]>last_t(param[0]):
+			tmp3=False
+		return tmp3
 
-    def pendi(param):
-        w=param[2]
-        a=param[3:]
-        t1=m-1
-        ms1=array([a[m-1]])
-        while t1 >0 :
-           ms1= append(ms1, w*ms1[-1]+(1-w)*a[t1-1])
-           t1 -= 1
-        ms=ms1[::-1]
-        return ms
+	def last_t(fi):
+		return(1./lam)*log(fi/(lam*det_lim))
 
+	def ln_like_data(param):
+		Asup=param[1]*density
+		loglike = 0.
+		tmp2=param[0]/lam
+		ts=times(dep_time_data,param)
+		for i in range(len(activity)):
+			A_i= Asup[i] + tmp2 *(exp(-lam*ts[int(X0[i])] ) - exp(-lam*ts[int(X1[i])]) )
+			Tau=.5*(sd_act[i]**(-2.))
+			loglike = loglike + Tau*((A_i-activity[i])**2.)
+		return loglike
 
-    def ln_prior_supp(param):
-        prior=0.
-        prior= prior -  (  (shapefi-1.)*log(param[0])-(param[0]/scale_fi) )# prior for fi
-        prior= prior -  (  (shapeAS-1.)*log(param[1])-(param[1]/scale_As) )# prior for supp
-        prior= prior -  ( ((1./by)-1.)*log(param[2])- log(by)+  ((1./by)*(shape1_m-1.))*log(param[2]) + (shape2_m - 1.)*log(1.-param[2]**(1./by) ) )# prior for w    #
-        for ms in range(m):
-           prior= prior -  (  (shape_acc-1.)*log(param[ms+3])-(param[ms+3]/scale_acc) )
-        return prior
+	def ln_like_T(param):
+		Asup=param[1]*density
+		loglike = 0.
+		tmp2=param[0]/lam
+		ts=times(dep_time_data,param)
+		for i in range(len(activity)):
+			A_i= Asup[i] + tmp2 *(exp(-lam*ts[int(X0[i])] ) - exp(-lam*ts[int(X1[i])]) )
+			Tau=.5*(sd_act[i]**(-2.))
+			loglike = loglike + 3.5*log(4. + Tau*((A_i-activity[i])**2.) )
+		return loglike
 
 
-    if T_mod:
-        log_data=ln_like_T
-    else:
-        log_data=ln_like_data
+	def ln_like_supp(param):
+		logsupp=0.
+		for i in range(len(supp)):
+			Tau=.5*(sd_supp[i]**-2.)
+			logsupp = logsupp + Tau*((param[1]-supp[i])**2.)
+		return logsupp
 
-    def obj(param):
-        objval= ln_like_supp(param) + ln_prior_supp(param) + log_data(param)
-        return objval
+	def times(x,param):
+		w=param[2]
+		a=param[3:]
+		t1=m-1
+		ms1=array([a[m-1]])
+		while t1 >0 :
+		   ms1= append(ms1, w*ms1[-1]+(1-w)*a[t1-1])
+		   t1 -= 1
+		ms=ms1[::-1]
+		ages=array([])
+		y_last=append([0],array([sum(ms[:i+1]*by) for i in range(len(ms))] ) )
+		for i in range(len(x)):
+		   k1=0
+		   while  breaks[k1]< x[i]:
+			   k1 += 1
+		   ages=append(ages,y_last[k1]+(ms[k1]*(by-(breaks[k1]-x[i]))))
+		return ages
+
+	def pendi(param):
+		w=param[2]
+		a=param[3:]
+		t1=m-1
+		ms1=array([a[m-1]])
+		while t1 >0 :
+		   ms1= append(ms1, w*ms1[-1]+(1-w)*a[t1-1])
+		   t1 -= 1
+		ms=ms1[::-1]
+		return ms
+
+
+	def ln_prior_supp(param):
+		prior=0.
+		prior= prior -  (  (shapefi-1.)*log(param[0])-(param[0]/scale_fi) )# prior for fi
+		prior= prior -  (  (shapeAS-1.)*log(param[1])-(param[1]/scale_As) )# prior for supp
+		prior= prior -  ( ((1./by)-1.)*log(param[2])- log(by)+  ((1./by)*(shape1_m-1.))*log(param[2]) + (shape2_m - 1.)*log(1.-param[2]**(1./by) ) )# prior for w	#
+		for ms in range(m):
+		   prior= prior -  (  (shape_acc-1.)*log(param[ms+3])-(param[ms+3]/scale_acc) )
+		return prior
+
+
+	if T_mod:
+		log_data=ln_like_T
+	else:
+		log_data=ln_like_data
+
+	if Cs==True:
+		def Cslike(param):		
+			return 0.
+	else:	
+		def Cslike(param):
+			tcs=times([Cs],param)
+			Tau=.5*(.3**-2.)
+			return Tau*(((Sdate-tcs)-CSTdate)**2.)
+
+
+	def obj(param):
+		objval= ln_like_supp(param) + ln_prior_supp(param) + log_data(param)+Cslike(param)
+		return objval
 
 
 
 
-    #################### Initial valules
-    print("Seaching initial values")
-    fi_ini_1= unif.rvs(size=1,loc=50, scale=200)  #200.
-    fi_ini_2= unif.rvs(size=1,loc=250, scale=150) #100.
-    supp_ini_1= unif.rvs(size=1,loc=15, scale=30) #5.
-    supp_ini_2= unif.rvs(size=1,loc=1, scale=15) #20.
-    w_ini = unif.rvs(size=1,loc=.2,scale=.3) #.3
-    w_ini0 = unif.rvs(size=1,loc=.3,scale=.3)  #.7
-    m_ini_1=unif.rvs(size=m,loc=0, scale=15)  #  repeat(array(3.1),m,axis=0)
-    m_ini_2=unif.rvs(size=m,loc=0, scale=15)  # repeat(array(.5),m,axis=0)
+	#################### Initial valules
+	print("Seaching initial values")
+	fi_ini_1= unif.rvs(size=1,loc=50, scale=200)  #200.
+	fi_ini_2= unif.rvs(size=1,loc=250, scale=150) #100.
+	supp_ini_1= unif.rvs(size=1,loc=15, scale=30) #5.
+	supp_ini_2= unif.rvs(size=1,loc=1, scale=15) #20.
+	w_ini = unif.rvs(size=1,loc=.2,scale=.3) #.3
+	w_ini0 = unif.rvs(size=1,loc=.3,scale=.3)  #.7
+	m_ini_1=unif.rvs(size=m,loc=0, scale=15)  #  repeat(array(3.1),m,axis=0)
+	m_ini_2=unif.rvs(size=m,loc=0, scale=15)  # repeat(array(.5),m,axis=0)
 
-    x=append(append(append(fi_ini_1,supp_ini_1),w_ini), m_ini_1)
-    xp=append(append(append(fi_ini_2,supp_ini_2),w_ini0), m_ini_2)
+	x=append(append(append(fi_ini_1,supp_ini_1),w_ini), m_ini_1)
+	xp=append(append(append(fi_ini_2,supp_ini_2),w_ini0), m_ini_2)
 
-    while not support(x):
-         m_ini_1=unif.rvs(size=m,loc=0, scale=3)
-         x=append(append(append(fi_ini_1,supp_ini_1),w_ini), m_ini_1)
+	while not support(x):
+		 m_ini_1=unif.rvs(size=m,loc=0, scale=3)
+		 x=append(append(append(fi_ini_1,supp_ini_1),w_ini), m_ini_1)
 
 
-    while not support(xp):
-         m_ini_2=unif.rvs(size=m,loc=0, scale=3)
-         xp=append(append(append(fi_ini_2,supp_ini_2),w_ini0), m_ini_2)
+	while not support(xp):
+		 m_ini_2=unif.rvs(size=m,loc=0, scale=3)
+		 xp=append(append(append(fi_ini_2,supp_ini_2),w_ini0), m_ini_2)
 
-    print("initial values were obtained")
+	print("initial values were obtained")
 
 
 
 	################## New MCMC test
-    
+	
 
-    thi = int((len(x)))*thi #thi 
-    burnin=burnin*len(xp) 
-    print("Total iterations,")
-    print(burnin + iterations*thi)
+	thi = int((len(x)))*thi #thi 
+	burnin=burnin*len(xp) 
+	print("Total iterations,")
+	print(burnin + iterations*thi)
 
 
-    leadchrono = pytwalk(n=len(x),U=obj,Supp=support)
-    i, k ,k0, n=0 , 0, 0, len(x)
-    U , Up = obj(x), obj(xp)
-    por=int(iterations/10.)
-    Output = zeros((iterations+1, n+1))
-    Output[ 0, 0:n] = x.copy()
-    Output[ 0, n] = U
-    por2=int(burnin/5.)
-    while i< iterations:
+	leadchrono = pytwalk(n=len(x),U=obj,Supp=support)
+	i, k ,k0, n=0 , 0, 0, len(x)
+	U , Up = obj(x), obj(xp)
+	por=int(iterations/10.)
+	Output = zeros((iterations+1, n+1))
+	Output[ 0, 0:n] = x.copy()
+	Output[ 0, n] = U
+	por2=int(burnin/5.)
+	while i< iterations:
 		onemove=leadchrono.onemove(x, U, xp, Up)
 		k+= 1
 		if (all([k<burnin,k % por2==0]) ):
@@ -234,66 +244,66 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 				i+= 1
 
 	#Output=array(Output)
-    print("Acceptance rate")
-    print(k0/(i+.0))
+	print("Acceptance rate")
+	print(k0/(i+.0))
 
-    ##################
-    """
-    out 0 -> Fi
-    out 1 -> Supported Activity
-    out 2 -> w
-    out 3-n -> dates
-    out -1 -> Energy
-    """
-    savetxt(dirt+'Results '+corename+'/Results_output.csv', Output,delimiter=',')
-    estim=[]
-    for i in range((iterations-1)):
-        estim.append(times(breaks,Output[(i+1),:-1])  )
-    estim=array(estim)
-    savetxt(dirt+'Results '+corename+'/dates.csv', estim  )
-    intervals=[]
+	##################
+	"""
+	out 0 -> Fi
+	out 1 -> Supported Activity
+	out 2 -> w
+	out 3-n -> dates
+	out -1 -> Energy
+	"""
+	savetxt(dirt+'Results '+corename+'/Results_output.csv', Output,delimiter=',')
+	estim=[]
+	for i in range((iterations-1)):
+		estim.append(times(breaks,Output[(i+1),:-1])  )
+	estim=array(estim)
+	savetxt(dirt+'Results '+corename+'/dates.csv', estim  )
+	intervals=[]
 
-    for i in range(len(estim[1,])):
-        sort=sorted(estim[:,(i)])
-        mean=sum(sort)/len(sort)
-        disc=int(len(sort)*.025)+1
-        disc1=int(len(sort)*.975)
-        sort=sort[disc:disc1]
-        intervals.append([breaks[i],sort[0],mean,sort[-1]])
+	for i in range(len(estim[1,])):
+		sort=sorted(estim[:,(i)])
+		mean=sum(sort)/len(sort)
+		disc=int(len(sort)*.025)+1
+		disc1=int(len(sort)*.975)
+		sort=sort[disc:disc1]
+		intervals.append([breaks[i],sort[0],mean,sort[-1]])
 
-    savetxt(dirt+'Results '+corename+'/intervals.csv', intervals ,delimiter=',')
-    depths=array([append([0.0],breaks)])
-    savetxt(dirt+'Results '+corename+'/depths.csv', depths,delimiter=',')
+	savetxt(dirt+'Results '+corename+'/intervals.csv', intervals ,delimiter=',')
+	depths=array([append([0.0],breaks)])
+	savetxt(dirt+'Results '+corename+'/depths.csv', depths,delimiter=',')
 
 
-    grafdepts=linspace(0,breaks[-1],resolution)
-    grafdepts2=grafdepts+(grafdepts[1]-grafdepts[0])/2
-    grafdepts2=grafdepts2[0:(len(grafdepts2)-1)]
+	grafdepts=linspace(0,breaks[-1],resolution)
+	grafdepts2=grafdepts+(grafdepts[1]-grafdepts[0])/2
+	grafdepts2=grafdepts2[0:(len(grafdepts2)-1)]
 
-    grafage=linspace(0,(max(estim[:,-1])+.10),resolution)
-    y=[]
-    for i in range(len(depths[0,:])-1):
-        logvect=array(grafdepts2>depths[0,i])*array(grafdepts2<=depths[0,i+1])
-        for k in range(len(logvect)):
-            if logvect[k]:
-                if i!=0:
-                    y1=estim[:,i-1]+((estim[:,i]-estim[:,i-1])/(depths[0,i+1]-depths[0,i]))*(grafdepts[k]-depths[0,i])
-                    porc=[]
-                    for posi in range(len(grafage)-1):
-                        porc.append(sum(array(y1>=grafage[posi])*array(y1<grafage[posi+1]) ))
-                    y.append(porc/(max(porc)+0.0 ))
-                else:
-                    y1=((estim[:,i]/depths[0,i+1])*(grafdepts[k]) )
-                    porc=[]
-                    for posi in range(len(grafage)-1):
-                        porc.append(sum(array(y1>=grafage[posi])*array(y1<grafage[posi+1]) ))
-                    y.append(porc/(max(porc)+0.0 ))
+	grafage=linspace(0,(max(estim[:,-1])+.10),resolution)
+	y=[]
+	for i in range(len(depths[0,:])-1):
+		logvect=array(grafdepts2>depths[0,i])*array(grafdepts2<=depths[0,i+1])
+		for k in range(len(logvect)):
+			if logvect[k]:
+				if i!=0:
+					y1=estim[:,i-1]+((estim[:,i]-estim[:,i-1])/(depths[0,i+1]-depths[0,i]))*(grafdepts[k]-depths[0,i])
+					porc=[]
+					for posi in range(len(grafage)-1):
+						porc.append(sum(array(y1>=grafage[posi])*array(y1<grafage[posi+1]) ))
+					y.append(porc/(max(porc)+0.0 ))
+				else:
+					y1=((estim[:,i]/depths[0,i+1])*(grafdepts[k]) )
+					porc=[]
+					for posi in range(len(grafage)-1):
+						porc.append(sum(array(y1>=grafage[posi])*array(y1<grafage[posi+1]) ))
+					y.append(porc/(max(porc)+0.0 ))
 
-    savetxt(dirt+'Results '+corename+'/Graphs.csv', array(y),delimiter=',')
-    slopes=[]
-    for i in range(iterations-1):
-        slopes.append(pendi(Output[(i+1),:-1])  )
-    savetxt(dirt+'Results '+corename+'/Slopes.csv', array(slopes),delimiter=',')
+	savetxt(dirt+'Results '+corename+'/Graphs.csv', array(y),delimiter=',')
+	slopes=[]
+	for i in range(iterations-1):
+		slopes.append(pendi(Output[(i+1),:-1])  )
+	savetxt(dirt+'Results '+corename+'/Slopes.csv', array(slopes),delimiter=',')
 
 
 
@@ -313,10 +323,10 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 
 ########################################################
 ###  This is the python implementation of the t-walk ### 
-###  By Andres Christen.                             ###
-###  A generic self adjusting MCMC                   ###
-###  see:  http://www.cimat.mx/~jac/twalk/           ###
-###  see also twalktutorial.py                       ###
+###  By Andres Christen.							 ###
+###  A generic self adjusting MCMC				   ###
+###  see:  http://www.cimat.mx/~jac/twalk/		   ###
+###  see also twalktutorial.py					   ###
 ########################################################
 
 
@@ -343,7 +353,7 @@ log3 = log(3.0)
 
 def Remain( Tr, it, sec1, sec2):
 	""" Remaining time Information messages:
-        total iterations Tr, current it, start time, current time, as returned by time() (floats)."""
+		total iterations Tr, current it, start time, current time, as returned by time() (floats)."""
 
 	# how many seconds remaining
 	ax = int( (Tr - it) *  ((sec2 - sec1)/it) )
@@ -454,9 +464,9 @@ class pytwalk:
 		### evaluating the ob. func. twice (in self._SetUpInitialValues) takes more than one second
 
 		sec2 = time() # last time we sent a message
-		print "       " + Remain( T, 2, sec, sec2)
+		print "	   " + Remain( T, 2, sec, sec2)
 
-		x = x0     ### Use x and xp by reference, so we can retrive the last values used
+		x = x0	 ### Use x and xp by reference, so we can retrive the last values used
 		xp = xp0
 
 		### Set the array to place the iterations and the U's ... we donot save up's
@@ -905,7 +915,7 @@ class pytwalk:
 
 	def Load( self, fnam, start=0, thin=1):
 		"""Loads the Output from a text file, typically written with the Save method.
-		   It will overwrite any other twalk output.  Updates the dimension n and the sample size T."""
+		It will overwrite any other twalk output.  Updates the dimension n and the sample size T."""
 		
 		print "Loading output from file", fnam
 		
@@ -944,7 +954,7 @@ class pytwalk:
 		y = x.copy()
 		for it in range(T):
 			y = x + normal(size=n)*sigma ### each entry with sigma[i] variance 
-			if Supp(y):        ### If it is within the support of the objective
+			if Supp(y):		### If it is within the support of the objective
 				uprop = U(y)   ### Evaluate the objective
 				if (uniform() < exp(u-uprop)):  
 					x = y.copy()   ### Accept the propolsal y

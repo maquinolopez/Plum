@@ -42,7 +42,7 @@ runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
   write.table(Lead,paste(folder,"Results ",Core.name,"/",Core.name,".csv",sep=""),sep=",",col.names = F,row.names = F)
   Lead=read.table(paste(folder,"Results ",Core.name,"/",Core.name,".csv",sep=""),sep=",")
   
-  if (by==TRUE){
+  if (as.character(by)==TRUE){
    by=(Lead[length(Lead[,1]),1])/20#25
   }
   

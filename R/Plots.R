@@ -251,8 +251,8 @@ chronologyresol<- function(folder){
   lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
   lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
   for (i in 1:length(Lead[,1])){
-    rug(Lead[i,1],col = rgb(0,0,1,.8))
-    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], 10, col = rgb(0,0,1,.3),border=F)
+    #rug(Lead[i,1],col = rgb(0,0,1,.8))
+    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], 10, col = rgb(0,0,1,.3),border=T)
   }
 }
   
@@ -317,7 +317,7 @@ chronologylinesP= function(folder,...){
 
 
 #' @export
-chronologylines= function(folder,...){
+chronologylines= function(folder,main1=TRUE,...){
   folder=paste(normalizePath(folder),"/",sep="")
   
   foldertmp=length(unlist(strsplit(folder,'')))
@@ -351,7 +351,9 @@ chronologylines= function(folder,...){
   Slopes=read.table(paste(folder,"Results ",Core.name,"/Slopes.csv",sep=""),sep=",")
   num_var=length(Output[0,])
   iterations=length(Ages[,1])
-
+  
+  if (main1!=TRUE){Core.name=main1  }
+#  print(Core.name)
 
 plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),
      xlab = "Depth (cm)",ylab="Age (years)",main=Core.name,...)
@@ -362,8 +364,8 @@ lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1,col="red")
 lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
 lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
 for (i in 1:length(Lead[,1])){
-  rug(Lead[i,1],col = rgb(0,0,1,.8))
-  rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
+  #rug(Lead[i,1],col = rgb(0,0,1,.8))
+  rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=T)
 }
 
 
@@ -405,8 +407,8 @@ slopes= function(folder,...){
     lines(Depths,as.numeric(c(Slopes[i,])),type="l",col=rgb(0,0,0,.01), lwd=2)
   }
   for (i in 1:length(Lead[,1])){
-    rug(Lead[i,1],col = rgb(0,0,1,.8))
-    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=F)
+    #rug(Lead[i,1],col = rgb(0,0,1,.8))
+    rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=T)
   }
 }
 

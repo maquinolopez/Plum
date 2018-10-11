@@ -239,7 +239,7 @@ chronologyresol<- function(folder){
   TotSeq=length(Ages[,1])
   memory_shape2=(memory_shape*(1-memory_mean) )/memory_mean
   
-  plot(-1,-1, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxA),xlab = "Depth (cm)",ylab="Age yr" ,
+  plot(-1,-1, xlim=c(0,Depths[length(Depths)]),ylim = c(0, maxA),xlab = "Depth (cm)",ylab="Age (year)" ,
        xaxs="i",yaxs="i",main= Core.name)
   for (i2 in 1:(resolution-1)){
     for (i in 1:(resolution-1) ){
@@ -300,7 +300,7 @@ chronologylinesP= function(folder,...){
 
 
   plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),
-       xlab = "Depth (cm)",ylab="Age yr",main=Core.name,...)
+       xlab = "Depth (cm)",ylab="Age (year)",main=Core.name,...)
   for (i in 1:(iterations-1)){
     lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
   }
@@ -356,7 +356,7 @@ chronologylines= function(folder,main1=TRUE,...){
 #  print(Core.name)
 
 plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages[,length(Ages[1,])])),
-     xlab = "Depth (cm)",ylab="Age yr",main=Core.name,...)
+     xlab = "Depth (cm)",ylab="Age (year)",main=Core.name,...)
 for (i in 1:(iterations-1)){
   lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
 }

@@ -142,7 +142,7 @@ Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""
 
 num_var=length(Output[0,])
 
-X11()
+dev.new()
 plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
 
 
@@ -161,7 +161,7 @@ dev.off()
 
 
 par(mfrow=c(1,1))
-X11()
+dev.new()
 fullchronology(folder = folder)
 
 

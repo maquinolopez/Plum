@@ -78,6 +78,7 @@ if(number_supported==FALSE){
     usemod=1
   }else if(length(Lead[1,])==7){
     cat("You have 226Ra data. \n")
+    print(Lead)
     plot(Lead$V1,Lead$V6,pch=16,ylim=c(min(Lead$V6-Lead$V7),max(Lead$V6+Lead$V7)), ylab="Concentration of 226Ra", xlab="Depth (cm)")
     segments(Lead$V1, Lead$V6-Lead$V7, x1 = Lead$V1, y1 = Lead$V6+Lead$V7)
     cat("Plum can assume to have a constant supported 210Pb and use the 226Ra data to infer this one value\n")

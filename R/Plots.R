@@ -469,7 +469,7 @@ ageof=function(folder,x,interval=.95){
     print(c(lim1,lim2))
     print(paste("with a ", interval, "%"," condifence interval and a mean of:",sep = ""))
     print(mean1)
-    return(list(Mean=mean1,Lower_lim=lim1,Upper_lim=lim2))
+    return(list(Mean=mean1,Lower_lim=lim1,Upper_lim=lim2,Data=sumages))
 
 
   }else{

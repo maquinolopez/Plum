@@ -163,6 +163,8 @@ dev.off()
 par(mfrow=c(1,1))
 dev.new()
 fullchronology(folder = folder)
+intervalfile=by_cm(folder,Core.name)
+write.csv(x = intervalfile,file = paste0(folder,"ages.csv"))
 
 
 }
@@ -217,4 +219,14 @@ check.qui.Ra = function(rawdat){
   }
 }
 
-
+#' @export
+by_cm=function(folder,Core.name){
+  #paste(folder,"Results ",Core.name,"/",Core.name,".csv",sep="")
+  intv=read.table(paste(folder,"Results ",Core.name,"/intervals.csv",sep=""),sep=",")
+  agedmodl=approx(c(0,intv[,1]),c(0,intv[,2]),c(1:max(intv[,1])))$y
+  agedmodm=approx(c(0,intv[,1]),c(0,intv[,3]),c(1:max(intv[,1])))$y
+  agedmodu=approx(c(0,intv[,1]),c(0,intv[,4]),c(1:max(intv[,1])))$y
+  Age_max=matrix(c(c(1:max(intv[,1])),agedmodl,agedmodm,agedmodu),ncol = 4,byrow=F)
+  colnames(Age_max) <- c("depth","min","mean","max")
+  return(Age_max)
+}

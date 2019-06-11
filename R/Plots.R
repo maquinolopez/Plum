@@ -1,5 +1,5 @@
 #' @export
-fullchronology= function(folder){
+fullchronology= function(folder,main1=T,lines.plot=F){
   folder=paste(normalizePath(folder),"/",sep="")
   layout(matrix(c(1,1,2,2,3,3,4,4,
                   1,1,2,2,3,3,4,4,
@@ -10,14 +10,17 @@ fullchronology= function(folder){
                   5,5,5,5,5,5,5,5), 7, 8, byrow = TRUE))
 
   memory.pos.plot( folder)
-
   acc.pos.plot(folder)
 
   supported.pos.plot(folder)
 
   supply.pos.plot(folder)
+  if (lines.plot==T){
+    chronologylines(folder, main1 = main1)
+  }else{
+    chronologyresol(folder)
+  }
   
-  chronologyresol(folder)
 
   par(mfrow=c(1,1))
 }

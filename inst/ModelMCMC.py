@@ -163,7 +163,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	else:	
 		def Cslike(param):
 			tcs=times([Cs],param)
-			Tau=.5*(.3**-2.)
+			Tau=.5*(1.**-2.)
 			return Tau*(((Sdate-tcs)-CSTdate)**2.)
 
 

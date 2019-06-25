@@ -187,7 +187,7 @@ supported.pos.plot=function(folder){
   }else {
     min1=min(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
     max1=max(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
-    plot(0,0,xlim=c(Lead[1,1],Lead[Ran,1]),ylim=c(min1,max1),xlab="Depth (cm)",ylab="",main="Supported 210Pb",xaxs="i",yaxs="i")
+    plot(0,0,xlim=c(Lead[1,1]-1,Lead[Ran,1]+1),ylim=c(min1,max1+5),xlab="Depth (cm)",ylab="",main="Supported 210Pb",xaxs="i",yaxs="i")
     for (k in 1:Ran) {
       points(rep(Lead[k,1],length(Output[-1,1+k])), Output[-1,1+k],pch=19,col=rgb(0,0,0,.03),cex=.5 )
       points(Lead[k,1],Lead[k,6],col="red",pch=18,cex=.5)

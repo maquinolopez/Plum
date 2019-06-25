@@ -15,7 +15,7 @@ runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
                  Cs=TRUE,Sampledate=2017,Cs_date=1968,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
-                 As_mean=10,As_acc=2,resolution=200,seeds=12345678,thin=30,burnin=7000){
+                 As_mean=10,As_acc=2,resolution=200,seeds=1234567,thin=30,burnin=7000){
   
   
   ##checks if data needs to be simulated
@@ -98,7 +98,9 @@ if(number_supported==FALSE){
 
 settings.file=c(Core.name,iterations, by, number_supported, detection_limit, memory_shape,memory_mean,
                 acc_shape,acc_mean,fi_mean,fi_acc,As_mean,As_acc,resolution,seeds,thin,burnin,usemod)
-settings.file=matrix(settings.file,ncol=1)
+settings.file.names <- c("#Core.name","#iterations", "#by", "#number_supported", "#detection_limit", "#memory_shape","#memory_mean",
+  "#acc_shape","#acc_mean","#fi_mean","#fi_acc","#As_mean","#As_acc","#resolution","#seeds","#thin","#burnin","#usemod")
+settings.file=matrix(c(settings.file,settings.file.names),ncol=2)
 write.table(x = settings.file,file = paste(folder,"settings.txt",sep=""),sep = ",",col.names = F,row.names = F)  
 
 

@@ -210,7 +210,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	print(burnin + iterations*thi)
 
 
-	leadchrono = pytwalk(n=len(x),U=obj,Supp=support)
+	leadchrono = pytwalk(n=len(x),U=obj,Supp=support, ww=[ 0.0, 0.4918, 0.4918, 0.0082+0.082, 0.0])
 	i, k ,k0, n=0 , 0, 0, len(x)
 	U , Up = obj(x), obj(xp)
 	por=int(iterations/10.)
@@ -245,7 +245,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 
 	#Output=array(Output)
 	print("Acceptance rate")
-	print(k0/(i+.0))
+	print((100.0*k0)/(burnin + iterations*thi))
 
 	##################
 	"""
@@ -819,7 +819,7 @@ class pytwalk:
 		self.sigma = max(self.phi*abs(xp - x))/3.0 ##Recalculate sigma, but same phi
 
 		if (nphi > 0):
-			return (nphi/2.0)*log2pi - nphi*log3 + nphi*log(self.sigma) + 0.5*9*SqrNorm(h - xp)/(self.sigma**2)
+			return (nphi/2.0)*log2pi  + nphi*log(self.sigma) + 0.5*SqrNorm(h - xp)/(self.sigma**2)
 		else:
 			return 0
 

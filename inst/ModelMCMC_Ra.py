@@ -204,7 +204,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	thi = int((len(x)))*thi #thi = 25, 50, 100
 	burnin=len(xp) *burnin  #burin 10000 20000
 	print("Total iterations,")
-	print(100*(k0+.0)/(burnin + iterations*thi))
+	print(burnin + iterations*thi)
 
 
 	leadchrono = pytwalk(n=len(x),U=obj,Supp=support, ww=[ 0.0, 0.4918, 0.4918, 0.0082+0.082, 0.0])
@@ -244,7 +244,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 
 	#Output=array(Output)
 	print("Acceptance rate")
-	print((100.0*k0)/(burnin + iterations*thi))
+	print((100.0 * k0)/(burnin + iterations*thi))
 
 
 	##################

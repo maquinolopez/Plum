@@ -15,7 +15,8 @@ runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
                  Cs=TRUE,Sampledate=2017,Cs_date=1968,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
-                 As_mean=10,As_acc=2,resolution=200,seeds=1234567,thin=30,burnin=7000){
+                 As_mean=10,As_acc=2,resolution=200,seeds=1234567,thin=30,burnin=7000,plots=T,
+                 def.supp=F){
   
   
   ##checks if data needs to be simulated
@@ -59,19 +60,22 @@ if(number_supported==FALSE){
     n.check=check.equi(Lead)
     print(n.check[1])
     usrresp=1
-    while(!(usrresp=="Yes"||usrresp=="No"||usrresp=="no"||usrresp=="yes")){
-      cat("Are you sure these data represent the supported 210Pb for this site?")
-      usrresp=readline( "Yes or No \n ")
-      if(usrresp=="Yes"||usrresp=="No"||usrresp=="no"||usrresp=="yes"){
-        if(usrresp=="Yes"||usrresp=="yes"){
-          number_supported=n.check[1]}
-        if(usrresp=="No"||usrresp=="no"){
-          checksupp="notoy"
-          while(typeof(checksupp)!="double"){
-            cat("Please indicate how many data points whould be use for estimating the supported 210Pb")
-            number_supported=scan("",n=1)
-
-            }
+    
+    if (def.supp==T){number_supported=n.check[1]}else{
+      while(!(usrresp=="Yes"||usrresp=="No"||usrresp=="no"||usrresp=="yes")){
+        cat("Are you sure these data represent the supported 210Pb for this site?")
+        usrresp=readline( "Yes or No \n ")
+        if(usrresp=="Yes"||usrresp=="No"||usrresp=="no"||usrresp=="yes"){
+          if(usrresp=="Yes"||usrresp=="yes"){
+            number_supported=n.check[1]}
+          if(usrresp=="No"||usrresp=="no"){
+            checksupp="notoy"
+            while(typeof(checksupp)!="double"){
+              cat("Please indicate how many data points whould be use for estimating the supported 210Pb")
+              number_supported=scan("",n=1)
+  
+              }
+          }
         }
       }
     }
@@ -140,14 +144,10 @@ if(length(Lead[1,])==5){
 
 ##############
 Data=paste(Core.name,".csv",sep="")
-
 Output=read.table(paste(folder,"Results ",Core.name,"/Results_output.csv",sep=""),sep=",",header = T)
-
+intervalfile=by_cm(folder,Core.name)
+write.csv(x = intervalfile,file = paste0(folder,"ages.csv"))
 num_var=length(Output[0,])
-
-dev.new()
-plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
-
 
 pdf(paste(folder,paste('Chronologylines ',Core.name,'.pdf',sep=""),sep=""))
 chronologylines(folder = folder)
@@ -164,10 +164,15 @@ dev.off()
 
 
 par(mfrow=c(1,1))
-dev.new()
-fullchronology(folder = folder)
-intervalfile=by_cm(folder,Core.name)
-write.csv(x = intervalfile,file = paste0(folder,"ages.csv"))
+if(plots==T){
+  dev.new()
+  plot(as.numeric(Output[-1,num_var]),type="l",main="Energy",xlab="",ylab="")
+  
+  dev.new()
+  fullchronology(folder = folder)
+}
+
+
 
 
 }
@@ -192,9 +197,9 @@ check.equi = function (rawdat){
     usedat=rawdata[(lendat-3-i):lendat]
     usesd=rawsd[(lendat-3-i):lendat]
     usex=1:length((lendat-3-i):lendat)
-    usereg= lm(usedat ~ usex, weights=1/(usesd^2))
+    usereg= lm(usedat ~ as.numeric(scale(usex)), weights=1/(usesd^2))
     reg1=coef(summary(usereg))[2,4]
-    est1=coef(summary(usereg))[1,1]
+    est1=mean( usedat)#coef(summary(usereg))[1,1]
     if(reg1>reg){ reg=reg1;coe=(3+i);est=est1 }
   }
 
@@ -202,7 +207,7 @@ check.equi = function (rawdat){
   cat(".\n")
     plot(deps,rawdata,pch=16,xlab="Depth",ylab="210Pb")
   points(deps[(lendat-coe+1):lendat],rawdata[(lendat-coe+1):lendat],col="red",pch=16,xlab="Depth (cm)",ylab="210Pb concentration")
-  abline(h=est,lty=2) #mean(rawdata[(lendat-coe+1):lendat])
+  #abline(h=est,lty=2) #mean(rawdata[(lendat-coe+1):lendat])
   return (c(coe,reg1))
 }
 

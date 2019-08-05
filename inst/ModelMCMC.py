@@ -5,7 +5,7 @@ from numpy.random import seed
 
 
 
-def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate,CSTdate):
+def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m,shape_acc,mean_acc,fi_mean,fi_acc, As_mean,As_acc,resolution,seeds,thi,burnin,bqkg,Cs,Sdate,CSTdate,dmax):
 	seed(int(seeds))
 	plomo="/"+corename+".csv"
 	fimean=fi_mean
@@ -61,7 +61,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 
 	m=1
 	breaks=array(m*by)
-	while m*by< depth[-1]:
+	while m*by< max(depth[-1],dmax):
 		m += 1
 		breaks=append(breaks,m*by)
 

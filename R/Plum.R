@@ -16,7 +16,7 @@ runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
                  As_mean=10,As_acc=2,resolution=200,seeds=1234567,thin=30,burnin=7000,plots=T,
-                 def.supp=F){
+                 def.supp=F,d.max=0){
   
   
   ##checks if data needs to be simulated
@@ -44,7 +44,7 @@ runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
   Lead=read.table(paste(folder,"Results ",Core.name,"/",Core.name,".csv",sep=""),sep=",")
   
   if (as.character(by)==TRUE){
-   by=(Lead[length(Lead[,1]),1])/20#25
+   by=(Lead[length(Lead[,1]),1])/25
   }
   
 
@@ -130,7 +130,7 @@ python.load(MCMC)
 
 python.call("plumMCMC",folder,Core.name,FALSE,    number_supported   ,    detection_limit   ,  iterations,
    by ,memory_shape     ,memory_mean    ,acc_shape       ,acc_mean,fi_mean,fi_acc,As_mean,As_acc
-   ,resolution,seeds,thin,burnin,Bqkg,Cs,Sampledate,Cs_date)
+   ,resolution,seeds,thin,burnin,Bqkg,Cs,Sampledate,Cs_date,d.max)
 
 Lead=read.table(paste(folder,Core.name,".csv",sep=""),sep=",")
 

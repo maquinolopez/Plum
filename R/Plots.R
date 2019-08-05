@@ -363,9 +363,9 @@ plot(Depths,c(0,Ages[2,]),type="l",col=rgb(0,0,0,.01), lwd=2,ylim = c(0,max(Ages
 for (i in 1:(iterations-1)){
   lines(Depths,c(0,Ages[i,]),type="l",col=rgb(0,0,0,.01), lwd=2)
 }
-lines(Depths,c(0,intervals[,2]),type="l", lty=2, lwd=1,col="red")
-lines(Depths,(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
-lines(Depths,(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
+lines(c(0,intervals[,1]),c(0,intervals[,2]),type="l", lty=2, lwd=1,col="red")
+lines(c(0,intervals[,1]),(c(0,intervals[,4])),type="l", lty=2, lwd=1,col="red")
+lines(c(0,intervals[,1]),(c(0,intervals[,3])),type="l", lty=2, lwd=1,col="red")
 for (i in 1:length(Lead[,1])){
   #rug(Lead[i,1],col = rgb(0,0,1,.8))
   rect(Lead[i,1]-Lead[i,5], -10, Lead[i,1], -1, col = rgb(0,0,1,.3),border=T)

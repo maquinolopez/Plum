@@ -3,7 +3,7 @@
 #' It takes the Data of eat each depth and creates samples from the
 #' posterior distribution using the Twalk methodology.
 #'
-#' @param itera is the number of iterations that Twalk will do (1e+6 is the recomended)
+#' @param itera is the number of iterations that Twalk will do (2e+4 is the recomended)
 #' @param Datos is the activity at each depth and organize starting from the surface.
 #' @param sdDatos is the standar deviation of each activity.
 #' @param Conti is a vector showing which data was sample discontinuosly (1 would mean the data was sample discontinusly and 0 means the data was sampled continously).
@@ -11,7 +11,7 @@
 
 #' @export  
 runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
-                 number_supported=FALSE,detection_limit=.1,Bqkg=TRUE,
+                 number_supported=-1,detection_limit=.1,Bqkg=TRUE,
                  Cs=TRUE,Sampledate=2017,Cs_date=1968,
                  memory_shape=4., memory_mean=.4,
                  acc_shape=1.5,acc_mean=15,fi_mean=50,fi_acc=2,
@@ -53,7 +53,7 @@ runPlum=function(Core.name=TRUE,folder=TRUE,iterations=2e+3,by=TRUE,
 
 print("working folder is")
 print(folder)
-if(number_supported==FALSE){
+if(number_supported==-1){
   if(length(Lead[1,])==5){
     cat("You do not have 226Ra cocentrations.")
     usemod  =1
@@ -80,7 +80,7 @@ if(number_supported==FALSE){
       }
     }
     usemod=1
-  }else if(length(Lead[1,])==7){
+  }else{if(length(Lead[1,])==7){
     cat("You have 226Ra data. \n")
     print(Lead)
     plot(Lead$V1,Lead$V6,pch=16,ylim=c(min(Lead$V6-Lead$V7),max(Lead$V6+Lead$V7)), ylab="Concentration of 226Ra", xlab="Depth (cm)")
@@ -95,7 +95,7 @@ if(number_supported==FALSE){
     }
     if (usemod==1){number_supported=0}
     print(number_supported)
-    }
+    }}
 }else{usemod=1}
 
 

@@ -17,7 +17,7 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	scale_fi=fimean/shapefi
 	scale_As=ASmaean/shapeAS
 	Data=genfromtxt (dirt+'Results '+corename+plomo, delimiter = ',')
-	print(Data)
+	print('ITS ME')
 
 	
 
@@ -157,15 +157,23 @@ def plumMCMC(dirt,corename,T_mod,num_sup,det_lim,iterations , by,shape1_m,mean_m
 	else:
 		log_data=ln_like_data
 
-	if Cs==True:
-		def Cslike(param):		
-			return 0.
-	else:	
+	if Cs == True:
 		def Cslike(param):
-			tcs=times([Cs],param)
-			Tau=.5*(1.**-2.)
-			return Tau*(((Sdate-tcs)-CSTdate)**2.)
-
+			return 0.
+	else:
+		if isinstance(Cs, float):
+			def Cslike(param):
+				tcs = times([Cs], param)
+				Tau = .5*(1.**-2.)
+				return Tau*(((Sdate-tcs)-CSTdate)**2.)
+		else:
+			def Cslike(param):
+				tcs = times(Cs, param)
+				Tau = .5*(1.**-2.)
+				Css = 0
+				for i in range(len(Cs)):
+					Css = Css + Tau*(((Sdate-tcs[i])-CSTdate[i])**2.)
+				return Css
 
 	def obj(param):
 		objval= ln_like_supp(param) + ln_prior_supp(param) + log_data(param)+Cslike(param)

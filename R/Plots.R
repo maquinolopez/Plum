@@ -26,7 +26,7 @@ fullchronology= function(folder,main1=T,lines.plot=F){
 }
 
 #' @export
-acc.pos.plot=function(folder){
+acc.pos.plot=function(folder,yrcm=T){
   foldertmp=length(unlist(strsplit(folder,'')))
   foldertmp=substr(folder,foldertmp,foldertmp)
   if(foldertmp=="/"){
@@ -57,11 +57,18 @@ acc.pos.plot=function(folder){
       if(supp_type==1){Ran=1}else{
         Ran=length(Lead[,1])}}
   
-
-  d <- density(as.numeric(unlist(Output[-1,-c(c(1:(Ran+2)),num_var)])))
-  plot(d,xlab="yr/cm",main="Acc rate",ylab = "",xlim=c(0,80),xaxs="i",yaxs="i")
-  polygon(d, col=gray(.6))
-  lines(seq(0,100,.5),dgamma(seq(0,100,.5),shape=acc_shape,scale=acc_mean/acc_shape),col="green")
+  if (yrcm==T){
+    d <- density(as.numeric(unlist(Output[-1,-c(c(1:(Ran+2)),num_var)])))
+    plot(d,xlab="yr/cm",main="Acc rate",ylab = "",xlim=c(0,80),xaxs="i",yaxs="i")
+    polygon(d, col=gray(.6))
+    lines(seq(0,100,.5),dgamma(seq(0,100,.5),shape=acc_shape,scale=acc_mean/acc_shape),col="green")  
+  }else{
+    d <- density(1/as.numeric(unlist(Output[-1,-c(c(1:(Ran+2)),num_var)])))
+    plot(d,xlab="cm/yr",main="Acc rate",ylab = "",xlim=c(0,200),xaxs="i",yaxs="i")
+    polygon(d, col=gray(.6))
+    lines(seq(0,100,.5),1/dgamma(seq(0,100,.5),shape=acc_shape,scale=acc_mean/acc_shape),col="green")  
+  }
+  
 }
 
 #' @export
@@ -136,7 +143,7 @@ supply.pos.plot= function(folder){
   num_var=length(Output[0,])
 
   d <- density(as.numeric(Output[-1,1]))
-  plot(d,xlab=expression(Bq/paste(m^2,yr)),main="Supply of 210Pb",ylab = "",xaxs="i",yaxs="i")
+  plot(d,xlab=expression(Bq/paste(m^2,yr)),main=expression("Supply "^"210"~"Pb"),ylab = "",xaxs="i",yaxs="i")
   polygon(d, col=gray(.6))
   lines(seq(0,350,.05),dgamma(seq(0,350,.05),shape=fi_acc,scale=fi_mean/fi_acc),col="green")
   
@@ -181,13 +188,13 @@ supported.pos.plot=function(folder){
 
   if(Ran==1){
     d <- density(as.numeric(Output[-1,2]))
-    plot(d,xlab="210Pb concentration",main="Supported 210Pb",ylab = "",xaxs="i",yaxs="i")
+    plot(d,xlab="Bq/kg",main=expression("Supported "~""^"210"~"Pb"),ylab = "",xaxs="i",yaxs="i")
     polygon(d, col=gray(.6))
     lines(seq(0,100,.05),dgamma(seq(0,100,.05),shape=As_acc,scale=As_mean/As_acc),col="green")
   }else {
     min1=min(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
     max1=max(as.numeric(unlist(Output[-1,2:(Ran+1)])))+.25
-    plot(0,0,xlim=c(Lead[1,1]-1,Lead[Ran,1]+1),ylim=c(min1,max1+5),xlab="Depth (cm)",ylab="",main="Supported 210Pb",xaxs="i",yaxs="i")
+    plot(0,0,xlim=c(Lead[1,1]-1,Lead[Ran,1]+1),ylim=c(min1,max1+5),xlab="Depth (cm)",ylab="",main=expression("Supported "~""^"210"~"Pb"),xaxs="i",yaxs="i")
     for (k in 1:Ran) {
       points(rep(Lead[k,1],length(Output[-1,1+k])), Output[-1,1+k],pch=19,col=rgb(0,0,0,.03),cex=.5 )
       points(Lead[k,1],Lead[k,6],col="red",pch=18,cex=.5)

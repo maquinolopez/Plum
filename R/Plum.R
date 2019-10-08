@@ -83,8 +83,10 @@ if(number_supported==-1){
   }else{if(length(Lead[1,])==7){
     cat("You have 226Ra data. \n")
     print(Lead)
-    plot(Lead$V1,Lead$V6,pch=16,ylim=c(min(Lead$V6-Lead$V7),max(Lead$V6+Lead$V7)), ylab="Concentration of 226Ra", xlab="Depth (cm)")
-    segments(Lead$V1, Lead$V6-Lead$V7, x1 = Lead$V1, y1 = Lead$V6+Lead$V7)
+    if (def.supp==T){
+        plot(Lead$V1,Lead$V6,pch=16,ylim=c(min(Lead$V6-Lead$V7),max(Lead$V6+Lead$V7)), ylab="Concentration of 226Ra", xlab="Depth (cm)")
+        segments(Lead$V1, Lead$V6-Lead$V7, x1 = Lead$V1, y1 = Lead$V6+Lead$V7)
+    }
     cat("Plum can assume to have a constant supported 210Pb and use the 226Ra data to infer this one value\n")
     cat("Plum can also assume individual supported 210Pb per data point.\n
         It is important to consider that this will greatly increases the computing time and it should only be use when clear patters are observed in the 226Ra data.\n")

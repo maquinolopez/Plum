@@ -1,12 +1,14 @@
 # Plum
 This is a beta version of Plum (see: https://doi.org/10.1007/s13253-018-0328-7).
 
-<span style="background-color: #ff0000">NOTE: this version is the beta version of Plum, for the official R version see rplum.</span>
+```diff
+- this version is the beta version of Plum, for the official R version see rplum.
+```
 
 
 Plum is a R-package, with dependencies on Python 2.7, which uses a Bayesian approach to construct age-depth models for 210Pb data. At the moment Plum only works in Unix base OS (Linux-Mac) it depends on rPython package which is only available in these systems. 
 
-## R official version
+## rplum, R's official version
 
 rplum has being accepted into CRAN (the R reposatories). For downloading this version use 
 

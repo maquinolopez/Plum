@@ -19,7 +19,7 @@ rplum has being accepted into CRAN (the R reposatories). For downloading this ve
 `Plum()`
 
 
-## Installing beta version
+## Installing Plum's beta version
 
 ### Preparing the system for Plum
 

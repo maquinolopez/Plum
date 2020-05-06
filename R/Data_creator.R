@@ -2,7 +2,7 @@
 
 timefunction<- function (x)(  (x^2)/3 + x/2)
 #'export
-Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thick=1,Fi=100,rho=0,errors=TRUE, error_supp=TRUE,crea.file=T,folder=T,epsi=.03,y.scat=1.5,sigmax=1.){
+Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thick=1,Fi.t=100,rho=0,errors=TRUE, error_supp=TRUE,crea.file=T,folder=T,epsi=.03,y.scat=1.5,sigmax=1.){
   dptS=depths[length(depths)]
   lambda=0.03114
   if (typeof(supp)=="character"){
@@ -11,6 +11,11 @@ Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thic
     supported=rep(supp,length(depths))}
   ########Functions #########
 
+  if (typeof(Fi.t) =="double"){
+    Fi <- function(x)(Fi.t*(x/x))
+  }else{Fi=Fi.t}
+  curve(Fi,0,30)
+  
   t1 =tfuntion#<- function (x)(  (x^2)/3 + x/2) #  8*x-20*sin(x/(1.*pi)) )#
   curve(t1,0,(dptS*.8))
   abline(h=250)
@@ -28,7 +33,7 @@ Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thic
   r.sed <- function(x){ rho(x)/dt(x)}
   curve(r.sed,0,dptS)
 
-  C0<- function(x){  Fi/r.sed(x)}
+  C0<- function(x){  Fi(x)/r.sed(x)}
   curve(C0,0,dptS)
 
 
@@ -108,18 +113,24 @@ Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thic
   segments(depths, sample1un+uncer, x1 = depths, y1 = sample1un-uncer)
   points(depths,suppo,pch=16,col="red",cex=.6)
   segments(depths, suppo+suppsd, x1 = depths, y1 = suppo-suppsd,col="red")
+  lab <- c()
+  for (i in depths){lab <- c(lab,paste0('Sim-',i))}
 
+  sim_data=matrix(c(lab,depths,(density/10),sample1un,uncer,rep(thick,length(depths)),suppo,rep(suppsd,length(suppo)) ),nrow=length(depths),byrow = FALSE)
 
-  sim_data=matrix(c(depths,(density/10),sample1un,uncer,rep(thick,length(depths)),suppo,rep(suppsd,length(suppo)) ),nrow=length(depths),byrow = FALSE)
-  
   
   if(crea.file==TRUE){
     if(folder==TRUE){
-      if(!dir.exists("~/Plum/")){
-        dir.create("~/Plum/")
+      if(!dir.exists("~/Bacon_runs/")){
+        dir.create("~/Bacon_runs/")
       }
-      ranind=floor(runif(1,10,99))
-      newfolder=paste("~/Plum/","Simulation-",ranind,sep="" )
+        if(Core.name==TRUE){
+          ranind=floor(runif(1,10,99))
+          newfolder=paste("~/Bacon_runs/","Simulation-",ranind,sep="" )
+        }else{
+          newfolder=paste0("~/Bacon_runs/",Core.name)
+        }
+      
       if(!dir.exists(newfolder)){
         dir.create(newfolder)
         folder=paste(newfolder,sep="")
@@ -127,8 +138,8 @@ Data_sim=function(tfuntion=timefunction, Core.name=TRUE,depths=1:30,supp=15,thic
 
     }else {ranind=floor(runif(1,10,99)) }
     
-    Col.names=c("Depth (cm)","Density g/cm^3","210Pb (Bq/kg)","sd(210Pb)","Thickness (cm)","226Ra (Bq/kg)","sd(226Ra)")
-    
+    Col.names=c('Lab',"Depth (cm)","Density g/cm^3","210Pb (Bq/kg)","sd(210Pb)","Thickness (cm)","226Ra (Bq/kg)","sd(226Ra)")
+
     if(Core.name==TRUE){
     datname=paste("Simulation-",ranind,".csv",sep="")
     }else{

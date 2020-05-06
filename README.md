@@ -1,7 +1,7 @@
 # Plum
 This is a beta version of Plum (see: https://doi.org/10.1007/s13253-018-0328-7).
 
-<span style="background-color: #FFFF00">NOTE: this version is the beta version of Plum, for the official R version see rplum.</span>
+<span style="background-color: #ff0000">NOTE: this version is the beta version of Plum, for the official R version see rplum.</span>
 
 
 Plum is a R-package, with dependencies on Python 2.7, which uses a Bayesian approach to construct age-depth models for 210Pb data. At the moment Plum only works in Unix base OS (Linux-Mac) it depends on rPython package which is only available in these systems. 
@@ -22,20 +22,20 @@ In the case of Mac OS, we recommend the installation of Anaconda (https://www.an
 
 For linux, 
 Arch
-# pacman -S python2 python2-numpy python2-scipy python2-matplotlib
+` pacman -S python2 python2-numpy python2-scipy python2-matplotlib`
 Fedora 
-# yum install python python-numpy python-scipy python-matplotlib
+` yum install python python-numpy python-scipy python-matplotlib`
 Ubuntu
-# apt install python python-numpy python-scipy python-matplotli
+` apt install python python-numpy python-scipy python-matplotli`
 
 
 To install rPython use install.packages("rPython", configure.vars= "RPYTHON_PYTHON_VERSION=2") this will let R know to use python 2.7.
 
 To install Plum from R using devtools.
 
-library(devtools)
+`library(devtools)`
 
-install_github("maquinolopez/Plum")
+`install_github("maquinolopez/Plum")`
 
 For questions contact me at: maquinolopez01@qub.ac.uk
 
